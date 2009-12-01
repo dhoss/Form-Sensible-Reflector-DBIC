@@ -70,7 +70,7 @@ has 'sql_type' => (
 
 has 'sql_types' => (
 	is			=> 'ro',
-	isa			=>	'HashRef[ArrayRef]',
+	isa			=>	'HashRef',
 	default		=> { {[]} },
 	lazy_build 	=> 1,
 );
@@ -87,14 +87,14 @@ has 'translated' => (
 ## otherwise return error string
 sub map_types {
 	my $self = shift;
-	my @definitions = $self->sql_types;
+	my %definitions = $self->sql_types;
 	my $type;
 	my $class;
 	my $class_type;
 	
-	for (@definitions) {
+	for (keys %definitions) {
 		
-		$type  = $self->translate($_->[0]->{data_type});
+		$type  = $self->translate($_->{data_type});
 		$class_type = require "Form::Sensible::Field::$type";
 		eval { require $class_type };
 		unless ( $@ ){
