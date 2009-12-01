@@ -2,7 +2,7 @@ package Form::Sensible::Reflector::DBIC::TypeMap;
 use Moose; 
 use namespace::autoclean;
 use namespace::clean;
-use Regexp::Common;
+
 
 ## Start with the basic SQL types found in common RDBMSes pertinent to forms
 ## primary keys are ignored as form types
@@ -70,20 +70,20 @@ has 'sql_type' => (
 
 has 'sql_types' => (
 	is			=> 'ro',
-	isa			=>	'ArrayRef[HashRef]',
-	default		=> { [{}] },
+	isa			=>	'HashRef[ArrayRef]',
+	default		=> { {[]} },
 	lazy_build 	=> 1,
 );
 
 has 'translated' => (
 	is			=> 'ro',
-	isa			=> 'ArrayRef[HashRef]',
-	default		=> { [{}] },
+	isa			=> 'HashRef[ArrayRef]',
+	default		=> { {[]} },
 	lazy_build 	=> 1,
 );
 
 ## translate types
-## return AoH if successful, 
+## return HoA if successful, 
 ## otherwise return error string
 sub map_types {
 	my $self = shift;
@@ -105,6 +105,7 @@ sub map_types {
 		
 		ucfirst($type);
 		push @{$self->translated($_)}, [ { $form => { fields => { name => $name, class => $class } } } ];
+		
 	}
 	
 	return $self->translated;
@@ -114,8 +115,9 @@ sub translate {
 	my ($self, $sql_type) = @_;
 	my $dbms = $self->dbms;
 	## big ass hash for mapping sql->form types
-	
-	return $types{$dbms}->{$sql_type};
+	## use respective DBMS role, call ->get_types
+	## %types = $role->get_types
+	return $types->{$sql_type};
 }
 
 __PACKAGE__->meta->make_immutable;
