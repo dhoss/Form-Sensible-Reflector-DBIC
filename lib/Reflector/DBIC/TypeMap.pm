@@ -2,7 +2,7 @@ package Form::Sensible::Reflector::DBIC::TypeMap;
 use Moose; 
 use namespace::autoclean;
 use namespace::clean;
-
+use Moose::Util qw/ apply_all_roles /;
 
 ## Start with the basic SQL types found in common RDBMSes pertinent to forms
 ## primary keys are ignored as form types
@@ -95,7 +95,7 @@ sub map_types {
 	for (keys %definitions) {
 		
 		$type  = $self->translate($_->{data_type});
-		$class_type = require "Form::Sensible::Field::$type";
+		$class_type = "Form::Sensible::Field::$type";
 		eval { require $class_type };
 		unless ( $@ ){
 			$class = $class_type
@@ -116,7 +116,8 @@ sub translate {
 	my $dbms = $self->dbms;
 	## big ass hash for mapping sql->form types
 	## use respective DBMS role, call ->get_types
-	## %types = $role->get_types
+	apply_all_roles($self, "Has$dbms");
+    %types = $self->get_types;
 	return $types->{$sql_type};
 }
 
