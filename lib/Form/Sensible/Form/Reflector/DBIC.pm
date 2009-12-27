@@ -75,7 +75,12 @@ sub map_types {
         #}
         # oughta make this smarter...
         push @fields,   { name => $definitions[$i]->{'name'}, field_class => $type->[0]->{'type'}, size => $definitions[$i]->{'size'} };
-	    push @fields,   { name => 'Submit',                 , field_class => 'Trigger' };
+	    # also, not a fan of this
+		if ( $definitions[$i]->{'name'} eq "password" ) {
+			push @fields, { name => $definitions[$i]->{'name'}, field_class => $type->[0]->{'type'}, render_hints => { field_type => 'password' }, 
+			size => $definitions[$i]->{'size'} }; 
+        }
+        push @fields,   { name => 'Submit',                 , field_class => 'Trigger' };
 	}
 
 	push @translated, { name => $self->name, fields => \@fields };

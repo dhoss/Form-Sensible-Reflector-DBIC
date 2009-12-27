@@ -48,7 +48,8 @@ my $form2 = Form::Sensible->create_form(
             {
                 field_class  => 'Text',
                 name         => 'password',
-            },
+                render_hints => { field_type => 'password' },
+			},
             {
                 field_class => 'Trigger',
                 name        => 'Submit'
