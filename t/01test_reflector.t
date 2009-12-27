@@ -1,3 +1,5 @@
+use strict;
+use warnings;
 use Test::More;
 use FindBin;
 use lib "/Users/dhoss/web-devel/FormSensible/lib";
@@ -8,7 +10,8 @@ my $lib_dir = $FindBin::Bin;
 my @dirs = split '/', $lib_dir;
 pop @dirs;
 $lib_dir = join( '/', @dirs );
-
+chomp $lib_dir;
+print $lib_dir . "\n";
 my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 use Form::Sensible::Form::Reflector::DBIC;
@@ -20,15 +23,13 @@ my $form  = Form::Sensible::Form::Reflector::DBIC->new(
 	schema => $schema
 );
 
-
+my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer = Form::Sensible->get_renderer(
     'HTML',
     {
         tt_config => {
             INCLUDE_PATH => [
-                $lib_dir
-                  . '/share/templates
-'
+                $lib_dir    . '/share/templates'
             ]
         }
     }
@@ -36,23 +37,21 @@ my $renderer = Form::Sensible->get_renderer(
 
 my $output = $renderer->render($form->create_form)->complete;
 
-my $form = Form::Sensible->create_form(
+my $form2 = Form::Sensible->create_form(
     {
         name   => 'test',
         fields => [
             {
                 field_class => 'Text',
                 name        => 'username',
-                validation  => { regex => '^[0-9a-z]*$' }
             },
             {
                 field_class  => 'Text',
                 name         => 'password',
-                render_hints => { field_type => 'password' }
             },
             {
                 field_class => 'Trigger',
-                name        => 'submit'
+                name        => 'Submit'
             }
         ],
     }
@@ -63,15 +62,13 @@ my $renderer2 = Form::Sensible->get_renderer(
     {
         tt_config => {
             INCLUDE_PATH => [
-                $lib_dir
-                  . '/share/template
-s'
+                $lib_dir. '/share/templates'
             ]
         }
     }
 );
-my $output_2 = $renderer2->render($form)->complete;
+my $output_2 = $renderer2->render($form2)->complete;
 
-ok( $output eq $output_2,
-    "flat creation and programmatic creation produce the same results" );
-done_testing();
+ok( $output eq $output_2, "Flat eq to pulled from DBIC");
+
+done_testing;
