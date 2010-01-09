@@ -11,6 +11,32 @@ __PACKAGE__->add_columns(
         is_nullable => 0,
 
     },
+	'file_upload',
+	{
+		data_type   => 'blob',
+		is_nullable => 0,
+	},
+	'date',
+	{
+		data_type   => 'datetime',
+		is_nullable => 0,
+	},
+	'big_text',
+	{
+		data_type   => 'text',
+		is_nullable =>0,
+		size        => '4096',
+	},
+	'number',
+	{
+		data_type   => 'int',
+		is_nullable => 0,
+	},
+	'big_number',
+	{
+		data_type   => 'bigint',
+		is_nullabel => 0,
+	},
     'password',
     {
         data_type   => 'varchar',

@@ -66,8 +66,7 @@ sub map_types {
     my @fields;
 	for my $i ( 0 .. $#definitions ) {
 
-        $type       = $self->translate( $definitions[$i]->{data_type} );
-        #eval { require $class_type };
+		#eval { require $class_type };
         #unless ($@) {
         #}
         #else {
@@ -77,7 +76,7 @@ sub map_types {
         push @fields,   { name => $definitions[$i]->{'name'}, field_class => $type->[0]->{'type'}, size => $definitions[$i]->{'size'} };
 	    # also, not a fan of this
 		if ( $definitions[$i]->{'name'} eq "password" ) {
-			push @fields, { name => $definitions[$i]->{'name'}, field_class => $type->[0]->{'type'}, render_hints => { field_type => 'password' }, 
+			push @fields, { name => $definitions[$i]->{'name'}, field_class => 'Text', render_hints => { field_type => 'password' }, 
 			size => $definitions[$i]->{'size'} }; 
         }
         push @fields,   { name => 'Submit',                 , field_class => 'Trigger' };
