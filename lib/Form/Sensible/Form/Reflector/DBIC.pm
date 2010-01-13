@@ -5,12 +5,28 @@ extends 'Form::Sensible::Form::Reflector';
 use DateTime;
 use Carp;
 
+has 'schema' => (
+    is         => 'rw',
+    isa        => 'DBIx::Class::Schema',
+    required   => 1,
+    lazy       => 1,
+    default    => sub { croak "No schema specified" }
+);
+
+has 'name' => (
+    is         => 'rw',
+    isa        => 'Str',
+	required   => 1,
+    lazy       => 1,
+    default    => sub { croak "No form name specified" }
+);
+
+
 ## otherwise return error string
 sub get_all_fields {
     my $self = shift;
     my @definitions;
-	my @columns = $self->SUPER::meta->get_attribute('options')
-	    ->{'schema'}->source( ucfirst $self->SUPER::meta->get_attribute('name')->value )->columns;
+	my @columns = $self->schema->source( ucfirst $self->name )->columns;
     return @columns;
 }
 	

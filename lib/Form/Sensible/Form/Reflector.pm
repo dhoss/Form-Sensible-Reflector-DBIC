@@ -15,7 +15,7 @@ has 'name' => (
 
 has 'reflector' => (
     is       => 'rw',
-    isa      => __PACKAGE__,
+    isa      => "Form::Sensible::Form::Reflector",
     lazy     => 1,
     required => 1,
     default  => sub { croak "You must specify a reflector class" }
@@ -60,18 +60,17 @@ sub get_field_defaults_for {
 }
 
 sub create_form {
-    my ( $self, $opts ) = @_;
-    my $reflector_class = "Form::Sensible::Form::Reflector::" . $opts->{'reflector'};
-	Class::MOP::load_class($reflector_class);
-	my $reflector = $reflector_class->new;
-	$self->reflector($reflector);
-	$self->name($opts->{'name'});
-    $self->options($opts->{'options'});
-	my $formhash = $self->get_all_fields;
+	    my ( $self, $opts ) = @_;
+		    my $reflector_class = "Form::Sensible::Form::Reflector::" . $opts->{'reflector'};
+				Class::MOP::load_class($reflector_class);
+					my $reflector = $reflector_class->new;
+#	$reflector->reflector($reflector);
+						$reflector->name($opts->{'name'});
+						    $reflector->options($opts->{'options'});
+								my $formhash = $reflector->get_all_fields;
 
-    my $form = Form::Sensible->create_form($formhash);
-    return $form;
+								    my $form = Form::Sensible->create_form($formhash);
+									    return $form;
 }
-
 __PACKAGE__->meta->make_immutable;
 1;
