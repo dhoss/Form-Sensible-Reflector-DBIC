@@ -5,12 +5,19 @@ extends 'Form::Sensible::Form::Reflector';
 use DateTime;
 use Carp;
 
+has 'options' => (
+    is         => 'rw',
+	isa        => 'HashRef',
+    lazy       => 1,
+	default    => sub { {} }
+);
+
 has 'schema' => (
     is         => 'rw',
     isa        => 'DBIx::Class::Schema',
     required   => 1,
     lazy       => 1,
-    default    => sub { croak "No schema specified" }
+    default    => sub { shift->options->{'schema'} }
 );
 
 has 'name' => (
@@ -18,16 +25,16 @@ has 'name' => (
     isa        => 'Str',
 	required   => 1,
     lazy       => 1,
-    default    => sub { croak "No form name specified" }
+    default    => sub { croak "No name for the form given" }
 );
-
 
 ## otherwise return error string
 sub get_all_fields {
     my $self = shift;
     my @definitions;
 	my @columns = $self->schema->source( ucfirst $self->name )->columns;
-    return @columns;
+    
+	return @definitions;
 }
 	
 sub get_types {
