@@ -2,7 +2,6 @@ use strict;
 use warnings;
 use Test::More;
 use FindBin;
-use lib "/Users/dhoss/web-devel/FormSensible/lib";
 use lib "$FindBin::Bin/../lib";
 use lib "t/lib";
 use DateTime;
@@ -19,18 +18,21 @@ use Form::Sensible::Form::Reflector::DBIC;
 use Form::Sensible;
 use Form::Sensible::Form;
 ## name must reflect the table which we are reflecting
-my $form = Form::Sensible::Form::Reflector::DBIC->new(
-    name   => 'test',
-    schema => $schema
-);
+
+my $form = Form::Sensible::Form::Reflector->create_form({
+    name      => 'test',
+	reflector => 'DBIC',
+    options   => { schema => $schema }
+});
 
 my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer =
   Form::Sensible->get_renderer( 'HTML',
     { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );
 
-my $output = $renderer->render( $form->create_form )->complete;
-
+my $output = $renderer->render( $form )->complete;
+use Data::Dumper;
+warn "Form: " . Dumper $form; 
 my $form2 = Form::Sensible->create_form(
     {
         name   => 'test',
