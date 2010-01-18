@@ -1,0 +1,6 @@
+0.01    2010-01-18
+ - First official working version. Tests pass
+ - Completed initial API
+ - Fixed get_types to return the appropriate hash for the updated Form::Sensible API
+ - made tests pass
+ - drank coffee

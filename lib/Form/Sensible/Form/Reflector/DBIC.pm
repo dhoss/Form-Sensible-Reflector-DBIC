@@ -2,10 +2,7 @@ package Form::Sensible::Form::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Form::Reflector';
-use Data::Dumper;
-use DateTime;
-use Carp;
-
+our $VERSION = "0.01";
 
 ## otherwise return error string
 sub get_all_fields {
