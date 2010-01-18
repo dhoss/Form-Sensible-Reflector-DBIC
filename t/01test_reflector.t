@@ -31,8 +31,8 @@ my $renderer =
 
 warn "Test form above render " . Dumper $form;
 $form->add_field($submit_button);
-my $output = $renderer->render( $form )->complete;
 $form->set_values( { date => DateTime->now } );
+my $output = $renderer->render( $form )->complete;
 warn "Test Form: " . Dumper $form; 
 
 my $form2 = Form::Sensible->create_form(
