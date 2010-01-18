@@ -4,7 +4,16 @@ use namespace::autoclean;
 extends 'Form::Sensible::Form::Reflector';
 our $VERSION = "0.01";
 
-## otherwise return error string
+# ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes
+
+=head2 $self->get_all_fields($opts)
+
+this grabs all the fields by name from your data source. then it loops through 
+and adds the fields definitions/constraints to the appropriate field, and returns
+an AoH containing this data.
+
+=cut
+
 sub get_all_fields {
     my ( $self, $opts ) = @_;
     my $schema  = $opts->{'options'}->{'schema'};
@@ -24,6 +33,15 @@ sub get_all_fields {
     return @definitions;
 }
 
+
+=head2 $self->get_types
+
+this is an internal and private method used solely for organizing the hashmap 
+of datatypes to Form::Sensible types.  Use something like this to organize your
+own reflector subclass datatypes.
+
+=cut
+
 sub get_types {
     my $self = shift;
     return {
@@ -37,6 +55,12 @@ sub get_types {
         bool     => 'Toggle',
     };
 }
+
+=head2 $self->get_field_types_for($datatype)
+
+This gets field definitions for a given datatype and returns them in hashref form.
+
+=cut
 
 sub get_field_types_for {
     my ( $self, $sql_type ) = @_;

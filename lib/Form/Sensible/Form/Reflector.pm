@@ -12,6 +12,12 @@ has 'options' => (
     required => 1,
 );
 
+=head2 $self->create_form($opts)
+
+override L<Form::Sensible>'s C<create_form> method so we can add in the info we want from DBIC
+
+=cut
+
 sub create_form {
     my ( $self, $opts ) = @_;
     my @names = $self->get_all_fields($opts);
