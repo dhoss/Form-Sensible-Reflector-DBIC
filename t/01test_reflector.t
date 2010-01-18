@@ -83,6 +83,6 @@ my $renderer2 =
     { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );
 my $output_2 = $renderer2->render($form2)->complete;
 is_deeply($form, $form2, "form one hash matches form two hash");
-ok( $output eq $output_2, "Flat eq to pulled from DBIC" );
+cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 
 done_testing;
