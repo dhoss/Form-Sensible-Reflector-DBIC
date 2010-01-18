@@ -2,38 +2,20 @@ package Form::Sensible::Form::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Form::Reflector';
+use Data::Dumper;
 use DateTime;
 use Carp;
 
-has 'options' => (
-    is         => 'rw',
-	isa        => 'HashRef',
-    lazy       => 1,
-	default    => sub { {} }
-);
-
-has 'schema' => (
-    is         => 'rw',
-    isa        => 'DBIx::Class::Schema',
-    required   => 1,
-    lazy       => 1,
-    default    => sub { shift->options->{'schema'} }
-);
-
-has 'name' => (
-    is         => 'rw',
-    isa        => 'Str',
-	required   => 1,
-    lazy       => 1,
-    default    => sub { croak "No name for the form given" }
-);
 
 ## otherwise return error string
 sub get_all_fields {
-    my $self = shift;
+    my ($self, $opts) = @_;
+    my $schema  = $opts->{'options'}->{'schema'};
+    my @columns = $schema->source( ucfirst $opts->{'name'} )->columns;
     my @definitions;
-	my @columns = $self->schema->source( ucfirst $self->name )->columns;
-    
+	for (@columns) {
+        push @definitions, { name => $_, type =>  $schema->source( ucfirst $opts->{'name'} )->column_info($_)->{'data_type'} };
+	}
 	return @definitions;
 }
 	
@@ -41,9 +23,9 @@ sub get_types {
     my $self = shift;
     return {
         varchar  => [ { type => 'Text' } ],
-        text     => [ { type => 'LongText', size => '4098' } ],
+        text     => [ { type => 'LongText'} ],
         blob     => [ { type => 'FileSelector' } ],
-        datetime => [ { type => 'Text', value => DateTime->now } ],
+        datetime => [ { type => 'Text'   } ],
         enum     => [ { type => 'Select' } ],
         int      => [ { type => 'Number' } ],
         bigint   => [ { type => 'Number' } ],
@@ -56,9 +38,9 @@ sub get_field_types_for {
     ## big ass hash for mapping sql->form types
     ## use respective DBMS role, call ->get_types
     my $types = $self->get_types;
+	Dumper $types;
     return $types->{$sql_type};
 }
 
 __PACKAGE__->meta->make_immutable;
-
 1;
