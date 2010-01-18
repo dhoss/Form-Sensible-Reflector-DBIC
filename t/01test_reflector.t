@@ -19,10 +19,12 @@ use Form::Sensible;
 use Form::Sensible::Form::Reflector::DBIC;
 ## name must reflect the table which we are reflecting
 
-my $form = Form::Sensible::Form::Reflector::DBIC->create_form({
-    name      => 'test',
-    options   => { schema => $schema }
-});
+my $form = Form::Sensible::Form::Reflector::DBIC->create_form(
+    {
+        name    => 'test',
+        options => { schema => $schema }
+    }
+);
 
 my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer =
@@ -32,8 +34,8 @@ my $renderer =
 warn "Test form above render " . Dumper $form;
 $form->add_field($submit_button);
 $form->set_values( { date => DateTime->now } );
-my $output = $renderer->render( $form )->complete;
-warn "Test Form: " . Dumper $form; 
+my $output = $renderer->render($form)->complete;
+warn "Test Form: " . Dumper $form;
 
 my $form2 = Form::Sensible->create_form(
     {
@@ -44,31 +46,31 @@ my $form2 = Form::Sensible->create_form(
                 name        => 'username',
             },
             {
-                field_class  => 'FileSelector',
-                name         => 'file_upload',
+                field_class => 'FileSelector',
+                name        => 'file_upload',
             },
             {
                 field_class => 'Text',
                 name        => 'date',
-            },                      
-			 {
-				                 field_class => 'LongText',
-								                 name        => 'big_text',
-												             },
-             {
-				                 field_class => 'Number',
-								                 name        => 'number',
-												             },
-             {
-				                 field_class => 'Number',
-								                 name        => 'big_number',
-												             },
+            },
+            {
+                field_class => 'LongText',
+                name        => 'big_text',
+            },
+            {
+                field_class => 'Number',
+                name        => 'number',
+            },
+            {
+                field_class => 'Number',
+                name        => 'big_number',
+            },
 
-			{
-                field_class => 'Text',
+            {
+                field_class  => 'Text',
                 name         => 'password',
-				render_hints => { field_type => 'password' },
-			},
+                render_hints => { field_type => 'password' },
+            },
             {
                 field_class => 'Trigger',
                 name        => 'submit'
@@ -82,7 +84,7 @@ my $renderer2 =
   Form::Sensible->get_renderer( 'HTML',
     { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );
 my $output_2 = $renderer2->render($form2)->complete;
-is_deeply($form, $form2, "form one hash matches form two hash");
+is_deeply( $form, $form2, "form one hash matches form two hash" );
 cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 
 done_testing;

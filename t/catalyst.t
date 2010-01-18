@@ -1,5 +1,8 @@
+use strict;
+use warnings;
 use Test::More;
-
-SKIP: {
-    # generate form via Catalyst
+TODO: {
+    local $TODO = "catalyst tests in progress";
+    ok(1);
 }
+done_testing;
