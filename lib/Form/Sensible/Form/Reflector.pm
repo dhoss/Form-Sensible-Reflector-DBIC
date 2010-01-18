@@ -18,10 +18,12 @@ sub create_form {
     my @names = $self->get_all_fields($opts);
     warn "Names" . Dumper @names;
 	my @formhash;
+	my @fields;
 	for ( @names ) {
-	    push @formhash,{ name => $_->{'name'}, field_type => $self->get_field_types_for($_->{'type'})}; 
+	    push @fields,{ name => $_->{'name'}, render_hints => $_->{'render_hints'} || {}, field_class => $self->get_field_types_for($_->{'type'})}; 
     }
-	warn "Form: " . Dumper @formhash;
+    push @formhash, { name => $opts->{'name'}, fields => \@fields };
+    warn "Form: " . Dumper @formhash;
     my $form = Form::Sensible->create_form(@formhash);
     return $form;
 }

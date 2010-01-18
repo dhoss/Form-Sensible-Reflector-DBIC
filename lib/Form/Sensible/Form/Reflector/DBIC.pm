@@ -14,7 +14,12 @@ sub get_all_fields {
     my @columns = $schema->source( ucfirst $opts->{'name'} )->columns;
     my @definitions;
 	for (@columns) {
-        push @definitions, { name => $_, type =>  $schema->source( ucfirst $opts->{'name'} )->column_info($_)->{'data_type'} };
+        push @definitions, 
+		{ 
+			name => $_, 
+			type =>  $schema->source( ucfirst $opts->{'name'} )->column_info($_)->{'data_type'}, 
+		    render_hints => $schema->source( ucfirst $opts->{'name'} )->column_info($_)->{'render_hints'},
+		};
 	}
 	return @definitions;
 }
@@ -22,14 +27,14 @@ sub get_all_fields {
 sub get_types {
     my $self = shift;
     return {
-        varchar  => [ { type => 'Text' } ],
-        text     => [ { type => 'LongText'} ],
-        blob     => [ { type => 'FileSelector' } ],
-        datetime => [ { type => 'Text'   } ],
-        enum     => [ { type => 'Select' } ],
-        int      => [ { type => 'Number' } ],
-        bigint   => [ { type => 'Number' } ],
-        bool     => [ { type => 'Toggle' } ],
+        varchar  =>  'Text' ,
+        text     =>  'LongText' ,
+        blob     =>  'FileSelector'  ,
+        datetime =>  'Text'    ,
+        enum     =>  'Select'  ,
+        int      =>  'Number'  ,
+        bigint   =>  'Number'  ,
+        bool     =>  'Toggle'  ,
     };
 }
 
