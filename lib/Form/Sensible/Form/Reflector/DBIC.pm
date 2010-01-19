@@ -72,3 +72,17 @@ sub get_field_types_for {
 
 __PACKAGE__->meta->make_immutable;
 1;
+
+
+=head1 NAME 
+ 
+Form::Sensible::Form::Reflector::DBIC - A reflector class based on Form::Sensible and Form::Sensible::Form::Reflector
+
+=cut
+
+=head1 SYNOPSIS
+
+cocks
+
+=cut
+
