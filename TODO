@@ -1,3 +1,6 @@
 TODO:
 docs
 tests?
+save method? $form = Form::Sensible::Form::Reflector::DBIC->create_form(...);
+#...
+$form->save; # ?
