@@ -19,6 +19,8 @@ use Form::Sensible;
 use Form::Sensible::Form::Reflector::DBIC;
 ## name must reflect the table which we are reflecting
 
+my $dt = DateTime->now;
+
 my $form = Form::Sensible::Form::Reflector::DBIC->create_form(
     {
         name    => 'test',
@@ -33,7 +35,7 @@ my $renderer =
 
 warn "Test form above render " . Dumper $form;
 $form->add_field($submit_button);
-$form->set_values( { date => DateTime->now } );
+$form->set_values( { date => $dt } );
 my $output = $renderer->render($form)->complete;
 warn "Test Form: " . Dumper $form;
 
@@ -78,7 +80,7 @@ my $form2 = Form::Sensible->create_form(
         ],
     }
 );
-$form2->set_values( { date => DateTime->now } );
+$form2->set_values( { date => $dt } );
 warn "Form 2: " . Dumper $form2;
 my $renderer2 =
   Form::Sensible->get_renderer( 'HTML',
