@@ -6,34 +6,6 @@ our $VERSION = "0.01";
 
 # ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes
 
-=head2 $self->get_all_fields($opts)
-
-this grabs all the fields by name from your data source. then it loops through 
-and adds the fields definitions/constraints to the appropriate field, and returns
-an AoH containing this data.
-
-=cut
-
-sub get_all_fields {
-    my ( $self, $opts ) = @_;
-    my $schema  = $opts->{'options'}->{'schema'};
-    my @columns = $schema->source( ucfirst $opts->{'name'} )->columns;
-    my @definitions;
-    for (@columns) {
-        push @definitions,
-          {
-            name => $_,
-            type => $schema->source( ucfirst $opts->{'name'} )->column_info($_)
-              ->{'data_type'},
-            render_hints =>
-              $schema->source( ucfirst $opts->{'name'} )->column_info($_)
-              ->{'render_hints'},
-          };
-    }
-    return @definitions;
-}
-
-
 =head2 $self->get_types
 
 this is an internal and private method used solely for organizing the hashmap 
@@ -69,6 +41,22 @@ sub get_field_types_for {
     my $types = $self->get_types;
     return $types->{$sql_type};
 }
+
+
+=head1 $self->get_fieldnames()
+=cut
+
+sub get_fieldnames {
+	my $self = shift;
+	my $schema = $self->handle;
+	my $form = $self->form;
+	return $schema->source( ucfirst $form->name )->columns; 
+}
+
+=head1 $self->get_field_names()
+=cut
+
+sub get_field_definition {}
 
 __PACKAGE__->meta->make_immutable;
 1;

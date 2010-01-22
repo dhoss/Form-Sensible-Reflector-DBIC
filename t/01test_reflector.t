@@ -23,11 +23,11 @@ my $dt = DateTime->now;
 
 my $form = Form::Sensible::Form::Reflector::DBIC->create_form(
     {
-        name    => 'test',
-        options => { schema => $schema }
+	    handle      => $schema,
+	    form        => { name => 'test' }
     }
 );
-
+warn "Form: " . Dumper $form;
 my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer =
   Form::Sensible->get_renderer( 'HTML',
