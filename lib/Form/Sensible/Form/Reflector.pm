@@ -8,30 +8,6 @@ our $VERSION = '0.01';
 
 # ABSTRACT: A simple reflector class for Form::Sensible
 
-
-=head2 $self->get_all_fields
-=cut
-
-sub get_all_fields {
-    my ($self, $form, $handle) = @_;
-	warn "Form got to get_all_fields";
-	my $realform;
-	if ( ref $form eq 'HASH') {
-		$realform = Form::Sensible::Form->new(%{$form});
-    } elsif ( ref $form eq 'HASH' ) {
-	    $realform = $form;
-    }
-    my @columns = $self->get_fieldnames($realform, $handle); 
-    my @definitions;
-
-    for (@columns) {
-	   warn "Processing: " . $_;
-       $form->add_field($self->get_field_definition($realform, $handle, $_));
-    }
-    warn "Form: " . Dumper $realform;
-    return $realform;
-}
-
 =head2 $self->create_form($opts)
 
 override L<Form::Sensible>'s C<create_form> method so we can add in the info we want from DBIC
@@ -75,9 +51,9 @@ Form::Sensible::Form::Reflector - A base class for writing Form::Sensible reflec
     use namespace::autoclean;
     extends 'Form::Sensible::Form::Reflector';
 
-	sub get_all_fields { ... }
-
 	sub get_field_types_for { ... }
+	sub get_fieldnames { ... }
+	sub get_field_definition { ... }
 
 =cut
 
