@@ -8,47 +8,28 @@ our $VERSION = '0.01';
 
 # ABSTRACT: A simple reflector class for Form::Sensible
 
-has 'handle' => (
-    is       => 'rw',
-    required => 1,
-    lazy     => 1,
-    builder  => '_handle',
-);
-
-has 'form' => (
-    is       => 'rw',
-    required => 1,
-    lazy     => 1,
-    builder  => '_form',
-);
-
-sub _handle {
-	my ($self, $handle) = @_;
-	warn "Handle: " . Dumper $handle;
-	return $handle;
-}
-
-sub _form {
-	my ($self, $form) = @_;
-    warn "_form: " . Dumper $form;
-    return $form;
-}
 
 =head2 $self->get_all_fields
 =cut
 
 sub get_all_fields {
-    my $self = shift;
+    my ($self, $form, $handle) = @_;
 	warn "Form got to get_all_fields";
-    my @columns = $self->get_fieldnames(); 
-    my @definitions;
-	my $form = $self->form;
-	warn "get all fields form: " . Dumper $self->form;
-    for (@columns) {
-       $form->add_field($self->get_field_definition($_));
-
+	my $realform;
+	if ( ref $form eq 'HASH') {
+		$realform = Form::Sensible::Form->new(%{$form});
+    } elsif ( ref $form eq 'HASH' ) {
+	    $realform = $form;
     }
-    return @definitions;
+    my @columns = $self->get_fieldnames($realform, $handle); 
+    my @definitions;
+
+    for (@columns) {
+	   warn "Processing: " . $_;
+       $form->add_field($self->get_field_definition($realform, $handle, $_));
+    }
+    warn "Form: " . Dumper $realform;
+    return $realform;
 }
 
 =head2 $self->create_form($opts)
@@ -59,35 +40,22 @@ override L<Form::Sensible>'s C<create_form> method so we can add in the info we 
 
 sub create_form {
     my ( $self, $opts ) = @_;
-    $self->_handle($opts->{'handle'});
 
-    my $form;
 
-    if ( ref $opts->{'form'} eq 'CODE') {
-	    $form = $opts->{'form'};
+   	my $form;
+	if ( ref $opts->{'form'} eq 'HASH') {
+		$form = Form::Sensible::Form->new(%{$opts->{'form'}});
     } elsif ( ref $opts->{'form'} eq 'HASH' ) {
-	    $form = Form::Sensible::Form->new(%{$opts->{'form'}});
+	    $form = $opts->{'form'};
+    }
+    my @columns = $self->get_fieldnames($form, $opts->{'handle'}); 
+    my @definitions;
+
+    for (@columns) {
+	   warn "Processing: " . $_;
+       $form->add_field($self->get_field_definition($form, $opts->{'handle'}, $_));
     }
     warn "Form in create_form: " . Dumper $form;
-    $self->_form($form);
-    warn "Form got here";
-    my @names = $self->get_all_fields();
-	warn "Form got to get_all_fields";
-    my @formhash;
-    my @fields;
-    for (@names) {
-        push @fields,
-          {
-            name         => $_->{'name'},
-            render_hints => $_->{'render_hints'} || {},
-            field_class  => $self->get_field_types_for( $_->{'type'} )
-          };
-    }
-    
-    for (@formhash) {
-	    $form->add_field($_);
-    }
-
     return $form;
 }
 

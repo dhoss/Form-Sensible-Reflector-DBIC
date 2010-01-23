@@ -34,7 +34,7 @@ This gets field definitions for a given datatype and returns them in hashref for
 
 =cut
 
-sub get_field_types_for {
+sub get_field_type_for {
     my ( $self, $sql_type ) = @_;
     ## big ass hash for mapping sql->form types
     ## use respective DBMS role, call ->get_types
@@ -47,16 +47,22 @@ sub get_field_types_for {
 =cut
 
 sub get_fieldnames {
-	my $self = shift;
-	my $schema = $self->handle;
-	my $form = $self->form;
+	my ($self, $form, $schema) = @_;
 	return $schema->source( ucfirst $form->name )->columns; 
 }
 
-=head1 $self->get_field_names()
+=head1 $self->get_field_definition()
 =cut
 
-sub get_field_definition {}
+sub get_field_definition {
+	my ($self, $form, $schema, $name) = @_;
+	my $field = $schema->source( ucfirst $form->name )->column_info($name);
+	return { 
+		name         => $name, 
+		field_class  => $self->get_field_type_for($field->{'data_type'}),
+		render_hints => $field->{'render_hints'} || {},
+	};
+}
 
 __PACKAGE__->meta->make_immutable;
 1;
