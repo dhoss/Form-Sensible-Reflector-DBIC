@@ -1,4 +1,4 @@
-package Form::Sensible::Form::Reflector;
+package Form::Sensible::Reflector;
 use Moose;
 use namespace::autoclean;
 use Carp;

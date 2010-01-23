@@ -1,7 +1,7 @@
-package Form::Sensible::Form::Reflector::DBIC;
+package Form::Sensible::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
-extends 'Form::Sensible::Form::Reflector';
+extends 'Form::Sensible::Reflector';
 our $VERSION = "0.01";
 
 # ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes

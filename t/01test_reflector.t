@@ -16,12 +16,12 @@ print $lib_dir . "\n";
 my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 use Form::Sensible;
-use Form::Sensible::Form::Reflector::DBIC;
+use Form::Sensible::Reflector::DBIC;
 ## name must reflect the table which we are reflecting
 
 my $dt = DateTime->now;
 
-my $form = Form::Sensible::Form::Reflector::DBIC->create_form(
+my $form = Form::Sensible::Reflector::DBIC->create_form(
     {
 	    handle      => $schema,
 	    form        => { name => 'test' }
