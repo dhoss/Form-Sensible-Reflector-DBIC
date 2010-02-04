@@ -64,6 +64,10 @@ my $form2 = Form::Sensible->create_form(
                 name        => 'number',
             },
             {
+	            field_class => 'Number',
+	            name        => 'decimal',
+            },
+            {
                 field_class => 'Number',
                 name        => 'big_number',
             },

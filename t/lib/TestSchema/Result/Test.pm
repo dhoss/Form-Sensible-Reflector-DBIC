@@ -32,6 +32,11 @@ __PACKAGE__->add_columns(
 		data_type   => 'int',
 		is_nullable => 0,
 	},
+	'decimal',
+	{
+		data_type   => 'decimal',
+		is_nullable => 0,
+	},
 	'big_number',
 	{
 		data_type   => 'bigint',

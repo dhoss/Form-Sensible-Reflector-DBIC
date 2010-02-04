@@ -25,6 +25,7 @@ sub get_types {
         int      => 'Number',
         bigint   => 'Number',
         bool     => 'Toggle',
+        decimal  => 'Number'
     };
 }
 
