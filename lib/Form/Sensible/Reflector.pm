@@ -4,7 +4,7 @@ use namespace::autoclean;
 use Carp;
 use Data::Dumper;
 extends 'Form::Sensible', 'Form::Sensible::Form';
-our $VERSION = '0.017';
+our $VERSION = '0.02';
 
 # ABSTRACT: A simple reflector class for Form::Sensible
 

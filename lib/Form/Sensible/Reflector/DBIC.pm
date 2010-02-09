@@ -2,7 +2,8 @@ package Form::Sensible::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Reflector';
-our $VERSION = "0.017";
+our $VERSION = "0.02";
+use Data::Dumper;
 
 # ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes
 
@@ -61,8 +62,8 @@ sub get_field_definition {
     ## check to see if it's a primary key
     my @pks   = $schema->source( ucfirst $form->name )->primary_columns;
     my $field = $schema->source( ucfirst $form->name )->column_info($name);
-
-    if ( scalar( grep /^$$name$/, @pks ) ) {
+    warn "PKS: " . Dumper @pks;
+    if ( scalar( grep /$name/, @pks ) ) {
         return {
             name         => $name,
             field_class  => $self->get_field_type_for( $field->{'data_type'} ),
