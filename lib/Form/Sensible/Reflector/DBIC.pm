@@ -57,7 +57,19 @@ sub get_fieldnames {
 
 sub get_field_definition {
     my ( $self, $form, $schema, $name ) = @_;
+
+    ## check to see if it's a primary key
+    my @pks   = $schema->source( ucfirst $form->name )->primary_columns;
     my $field = $schema->source( ucfirst $form->name )->column_info($name);
+
+    if ( scalar( grep /^$$name$/, @pks ) ) {
+        return {
+            name         => $name,
+            field_class  => $self->get_field_type_for( $field->{'data_type'} ),
+            render_hints => { field_type => "hidden" }
+        };
+    }
+
     return {
         name         => $name,
         field_class  => $self->get_field_type_for( $field->{'data_type'} ),
