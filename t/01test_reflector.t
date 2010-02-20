@@ -23,21 +23,18 @@ my $dt = DateTime->now;
 
 my $form = Form::Sensible::Reflector::DBIC->create_form(
     {
-	    handle      => $schema,
+	    handle      => $schema->resultset( "Test" ),
 	    form        => { name => 'test' }
     }
 );
-warn "Form: " . Dumper $form;
 my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer =
   Form::Sensible->get_renderer( 'HTML',
     { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );
 
-warn "Test form above render " . Dumper $form;
 $form->add_field($submit_button);
 $form->set_values( { date => $dt } );
 my $output = $renderer->render($form)->complete;
-warn "Test Form: " . Dumper $form;
 
 my $form2 = Form::Sensible->create_form(
     {
@@ -85,7 +82,6 @@ my $form2 = Form::Sensible->create_form(
     }
 );
 $form2->set_values( { date => $dt } );
-warn "Form 2: " . Dumper $form2;
 my $renderer2 =
   Form::Sensible->get_renderer( 'HTML',
     { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );

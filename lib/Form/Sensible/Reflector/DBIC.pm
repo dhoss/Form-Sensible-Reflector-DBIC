@@ -49,20 +49,19 @@ sub get_field_type_for {
 =cut
 
 sub get_fieldnames {
-    my ( $self, $form, $schema ) = @_;
-    return $schema->source( ucfirst $form->name )->columns;
+    my ( $self, $form, $resultset ) = @_;
+    return $resultset->result_source->columns;
 }
 
 =head1 $self->get_field_definition()
 =cut
 
 sub get_field_definition {
-    my ( $self, $form, $schema, $name ) = @_;
+    my ( $self, $form, $resultset, $name ) = @_;
 
     ## check to see if it's a primary key
-    my @pks   = $schema->source( ucfirst $form->name )->primary_columns;
-    my $field = $schema->source( ucfirst $form->name )->column_info($name);
-    warn "PKS: " . Dumper @pks;
+    my @pks   = $resultset->result_source->primary_columns;
+    my $field = $resultset->result_source->column_info($name);
     if ( scalar( grep /$name/, @pks ) ) {
         return {
             name         => $name,
