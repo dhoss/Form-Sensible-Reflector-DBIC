@@ -4,7 +4,6 @@ use Test::More;
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use lib "t/lib";
-use Data::Dumper;
 use DateTime;
 use TestSchema;
 my $lib_dir = $FindBin::Bin;
@@ -12,7 +11,6 @@ my @dirs = split '/', $lib_dir;
 pop @dirs;
 $lib_dir = join( '/', @dirs );
 chomp $lib_dir;
-print $lib_dir . "\n";
 my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 use Form::Sensible;
@@ -23,8 +21,8 @@ my $dt = DateTime->now;
 
 my $form = Form::Sensible::Reflector::DBIC->create_form(
     {
-	    handle      => $schema->resultset( "Test" ),
-	    form        => { name => 'test' }
+        handle => $schema->resultset("Test"),
+        form   => { name => 'test' }
     }
 );
 my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
@@ -61,8 +59,8 @@ my $form2 = Form::Sensible->create_form(
                 name        => 'number',
             },
             {
-	            field_class => 'Number',
-	            name        => 'decimal',
+                field_class => 'Number',
+                name        => 'decimal',
             },
             {
                 field_class => 'Number',

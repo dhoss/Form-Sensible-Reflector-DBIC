@@ -2,9 +2,8 @@ package Form::Sensible::Reflector;
 use Moose;
 use namespace::autoclean;
 use Carp;
-use Data::Dumper;
 extends 'Form::Sensible', 'Form::Sensible::Form';
-our $VERSION = '0.02';
+our $VERSION = '0.03';
 
 # ABSTRACT: A simple reflector class for Form::Sensible
 
@@ -17,21 +16,20 @@ override L<Form::Sensible>'s C<create_form> method so we can add in the info we 
 sub create_form {
     my ( $self, $opts ) = @_;
 
-
-   	my $form;
-	if ( ref $opts->{'form'} eq 'HASH') {
-		$form = Form::Sensible::Form->new(%{$opts->{'form'}});
-    } elsif ( ref $opts->{'form'} eq 'HASH' ) {
-	    $form = $opts->{'form'};
+    my $form;
+    if ( ref $opts->{'form'} eq 'HASH' ) {
+        $form = Form::Sensible::Form->new( %{ $opts->{'form'} } );
     }
-    my @columns = $self->get_fieldnames($form, $opts->{'handle'}); 
+    elsif ( ref $opts->{'form'} eq 'HASH' ) {
+        $form = $opts->{'form'};
+    }
+    my @columns = $self->get_fieldnames( $form, $opts->{'handle'} );
     my @definitions;
 
     for (@columns) {
-	   warn "Processing: " . $_;
-       $form->add_field($self->get_field_definition($form, $opts->{'handle'}, $_));
+        $form->add_field(
+            $self->get_field_definition( $form, $opts->{'handle'}, $_ ) );
     }
-    warn "Form in create_form: " . Dumper $form;
     return $form;
 }
 
