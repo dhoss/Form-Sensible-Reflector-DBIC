@@ -87,7 +87,26 @@ Form::Sensible::Form::Reflector::DBIC - A reflector class based on Form::Sensibl
 
 =head1 SYNOPSIS
 
-cocks
+	my $schema = TestSchema->connect('dbi:SQLite::memory:');
+	$schema->deploy;
+	use Form::Sensible;
+	use Form::Sensible::Reflector::DBIC;
+	## name must reflect the table which we are reflecting
+
+	my $dt = DateTime->now;
+
+	my $form = Form::Sensible::Reflector::DBIC->create_form(
+	    {
+	        handle => $schema->resultset("Test"),
+	        form   => { name => 'test' }
+	    }
+	);
+	my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
+	my $renderer = Form::Sensible->get_renderer('HTML');
+
+	$form->add_field($submit_button);
+	$form->set_values( { date => $dt } );
+	my $output = $renderer->render($form)->complete;
 
 =cut
 
