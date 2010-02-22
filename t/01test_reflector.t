@@ -26,9 +26,7 @@ my $form = Form::Sensible::Reflector::DBIC->create_form(
     }
 );
 my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
-my $renderer =
-  Form::Sensible->get_renderer( 'HTML',
-    { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );
+my $renderer = Form::Sensible->get_renderer('HTML');
 
 $form->add_field($submit_button);
 $form->set_values( { date => $dt } );
@@ -80,10 +78,8 @@ my $form2 = Form::Sensible->create_form(
     }
 );
 $form2->set_values( { date => $dt } );
-my $renderer2 =
-  Form::Sensible->get_renderer( 'HTML',
-    { tt_config => { INCLUDE_PATH => [ $lib_dir . '/share/templates' ] } } );
-my $output_2 = $renderer2->render($form2)->complete;
+my $renderer2 = Form::Sensible->get_renderer('HTML');
+my $output_2  = $renderer2->render($form2)->complete;
 is_deeply( $form, $form2, "form one hash matches form two hash" );
 cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 
