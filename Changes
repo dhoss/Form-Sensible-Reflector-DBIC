@@ -1,3 +1,5 @@
+0.341   2010-02-23
+ - added prereq for SQL::Translator v. 0.11002 
 0.34    2010-02-21
  - updated to new reflector API
 0.33    2010-02-21
