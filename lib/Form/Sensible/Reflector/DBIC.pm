@@ -2,7 +2,7 @@ package Form::Sensible::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Reflector';
-our $VERSION = "0.0341";
+our $VERSION = "0.0342";
 
 # ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes
 
@@ -57,6 +57,7 @@ sub get_fieldnames {
 
 sub get_field_definition {
     my ( $self, $form, $resultset, $name ) = @_;
+    ## TODO: Follow relationships
 
     ## check to see if it's a primary key
     my @pks   = $resultset->result_source->primary_columns;
@@ -73,6 +74,7 @@ sub get_field_definition {
         name         => $name,
         field_class  => $self->get_field_type_for( $field->{'data_type'} ),
         render_hints => $field->{'render_hints'} || {},
+        default_value => $field->{'default_form_value'} || {},
     };
 }
 
@@ -95,9 +97,10 @@ Form::Sensible::Form::Reflector::DBIC - A reflector class based on Form::Sensibl
 
 	my $dt = DateTime->now;
 
-	my $form = Form::Sensible::Reflector::DBIC->create_form(
+	my $reflector = Form::Sensible::Reflector::DBIC->new;
+	my $form      = $reflector->reflect_from(
+	    $schema->resultset("Test"),
 	    {
-	        handle => $schema->resultset("Test"),
 	        form   => { name => 'test' }
 	    }
 	);

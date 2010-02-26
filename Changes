@@ -1,3 +1,6 @@
+0.342   2010-02-26
+ - fixed docs
+ - added default_form_value for *inside* schemas, rendered as default_value in the form
 0.341   2010-02-23
  - added prereq for SQL::Translator v. 0.11002 
 0.34    2010-02-21

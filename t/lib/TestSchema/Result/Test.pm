@@ -1,5 +1,6 @@
 package TestSchema::Result::Test;
 use base qw/DBIx::Class/;
+use DateTime;
 
 __PACKAGE__->load_components(qw/ Core  /);
 __PACKAGE__->table('user');
@@ -20,6 +21,7 @@ __PACKAGE__->add_columns(
 	{
 		data_type   => 'datetime',
 		is_nullable => 0,
+		default_form_value => DateTime->now,
 	},
 	'big_text',
 	{

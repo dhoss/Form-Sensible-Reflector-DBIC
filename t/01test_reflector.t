@@ -25,7 +25,6 @@ my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer = Form::Sensible->get_renderer('HTML');
 
 $form->add_field($submit_button);
-$form->set_values( { date => $dt } );
 my $output = $renderer->render($form)->complete;
 
 my $form2 = Form::Sensible->create_form(
@@ -43,6 +42,7 @@ my $form2 = Form::Sensible->create_form(
             {
                 field_class => 'Text',
                 name        => 'date',
+                default_form_value => $dt
             },
             {
                 field_class => 'LongText',
@@ -73,7 +73,6 @@ my $form2 = Form::Sensible->create_form(
         ],
     }
 );
-$form2->set_values( { date => $dt } );
 my $renderer2 = Form::Sensible->get_renderer('HTML');
 my $output_2  = $renderer2->render($form2)->complete;
 is_deeply( $form, $form2, "form one hash matches form two hash" );
