@@ -17,16 +17,21 @@ own reflector subclass datatypes.
 sub get_types {
     my $self = shift;
     return {
-        varchar  => 'Text',
-        text     => 'LongText',
-        blob     => 'FileSelector',
-        datetime => 'Text',
-        enum     => 'Select',
-        int      => 'Number',
-        integer  => 'Number',
-        bigint   => 'Number',
-        bool     => 'Toggle',
-        decimal  => 'Number'
+        varchar    => 'Text',
+        text       => 'LongText',
+        mediumtext => 'LongText',
+        blob       => 'FileSelector',
+        datetime   => 'Text',
+        timestamp  => 'Text',
+        enum       => 'Select',
+        smallint   => 'Number',
+        int        => 'Number',
+        integer    => 'Number',
+        mediumint  => 'Number',
+        tinyint    => 'Number',
+        bigint     => 'Number',
+        bool       => 'Toggle',
+        decimal    => 'Number'
     };
 }
 
@@ -71,10 +76,11 @@ sub get_field_definition {
     }
 
     return {
-        name         => $name,
-        field_class  => $self->get_field_type_for( $field->{'data_type'} ),
-        render_hints => $field->{'render_hints'} || {},
-        default_value => $field->{'default_form_value'} if exists $field->{'default_form_value'},
+        name          => $name,
+        field_class   => $self->get_field_type_for( $field->{'data_type'} ),
+        render_hints  => $field->{'render_hints'} || {},
+        default_value => $field->{'default_form_value'}
+          if exists $field->{'default_form_value'},
     };
 }
 
