@@ -74,7 +74,7 @@ sub get_field_definition {
         name         => $name,
         field_class  => $self->get_field_type_for( $field->{'data_type'} ),
         render_hints => $field->{'render_hints'} || {},
-        default_value => $field->{'default_form_value'} || {},
+        default_value => $field->{'default_form_value'} if exists $field->{'default_form_value'},
     };
 }
 
