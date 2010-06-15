@@ -15,8 +15,7 @@ my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 use Form::Sensible;
 use Form::Sensible::Reflector::DBIC;
-## name must reflect the table which we are reflecting
-
+use Data::Dumper;
 my $dt        = DateTime->now;
 my $reflector = Form::Sensible::Reflector::DBIC->new;
 my $form      = $reflector->reflect_from( $schema->resultset("Test"),
@@ -26,7 +25,7 @@ my $renderer = Form::Sensible->get_renderer('HTML');
 
 $form->add_field($submit_button);
 my $output = $renderer->render($form)->complete;
-
+warn "reflector form: " . Dumper $form;
 my $form2 = Form::Sensible->create_form(
     {
         name   => 'test',
@@ -73,6 +72,8 @@ my $form2 = Form::Sensible->create_form(
         ],
     }
 );
+
+warn "hand made form: " . Dumper $form2;
 my $renderer2 = Form::Sensible->get_renderer('HTML');
 my $output_2  = $renderer2->render($form2)->complete;
 is_deeply( $form, $form2, "form one hash matches form two hash" );
