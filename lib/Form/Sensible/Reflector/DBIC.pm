@@ -14,26 +14,58 @@ own reflector subclass datatypes.
 
 =cut
 
-sub get_types {
-    my $self = shift;
-    return {
-        varchar    => 'Text',
-        text       => 'LongText',
-        mediumtext => 'LongText',
-        blob       => 'FileSelector',
-        datetime   => 'Text',
-        timestamp  => 'Text',
-        enum       => 'Select',
-        smallint   => 'Number',
-        int        => 'Number',
-        integer    => 'Number',
-        mediumint  => 'Number',
-        tinyint    => 'Number',
-        bigint     => 'Number',
-        bool       => 'Toggle',
-        decimal    => 'Number'
-    };
-}
+has 'field_type_map' => (
+    is        => 'rw',
+    isa       => 'HashRef',
+    required  => 1,
+    lazy      => 1,
+    default   => sub { 
+                        return {
+                            varchar  => {
+                                            field_class => 'LongText',
+                                            parameter_names => [qw/minimum_length maximum_length should_truncate/],
+                                        },
+                            text     => {
+                                            field_class => 'LongText',
+                                            parameter_names => [qw/minimum_length maximum_length should_truncate/],
+                                        },
+                            blob     => {   
+                                            field_class => 'FileSelector',
+                                        },
+                            datetime =>  { 
+                                            field_class => 'Text', 
+                                         }
+                            enum     =>  {  
+                                            field_class => 'Select',
+                                         },
+                            int      =>  { 
+                                            field_class => 'Number', 
+                                            parameter_names => [ qw/integer_only upper_bound lower_bound step/ ],  
+                                            force => { integer_only => 1 } 
+                                         },
+                            integer  => { 
+                                            field_class => 'Number', 
+                                            parameter_names => [ qw/integer_only upper_bound lower_bound step/ ],  
+                                            force => { integer_only => 1 } 
+                                        },
+                            bigint   => { 
+                                            field_class => 'Number', 
+                                            parameter_names => [ qw/integer_only upper_bound lower_bound step/ ],  
+                                            force => { integer_only => 1 } 
+                                        },
+                            bool     => { 
+                                            field_class => 'Toggle',
+                                            parameter_names => [ qw/on_value off_value on_label off_label/],
+                                        },
+                            decimal  => { 
+                                            field_class => 'Number', 
+                                            parameter_names => [ qw/integer_only upper_bound lower_bound step/ ],  
+                                            force => { integer_only => 0 } 
+                                        }
+                        };
+                    },
+);
+
 
 =head2 $self->get_field_types_for($datatype)
 
@@ -45,8 +77,7 @@ sub get_field_type_for {
     my ( $self, $sql_type ) = @_;
     ## big ass hash for mapping sql->form types
     ## use respective DBMS role, call ->get_types
-    my $types = $self->get_types;
-    return $types->{$sql_type};
+    return $self->field_type_map->{$sql_type};
 }
 
 =head1 $self->get_fieldnames()
@@ -66,22 +97,40 @@ sub get_field_definition {
 
     ## check to see if it's a primary key
     my @pks   = $resultset->result_source->primary_columns;
-    my $field = $resultset->result_source->column_info($name);
+    my $columninfo = $resultset->result_source->column_info($name);
+    
+    my $params = $self->get_field_type_for( $columninfo->{'data_type'});
+    
+    my $definition = { 
+                        name => $name,
+                        field_class => $params->{'fieldclass'} 
+                     };
+                     
+    foreach my $key (@{$params->{'parameter_names'}}, qw/render_hints/ ) {
+        if (exists($columninfo->{'validation'}{$key})) {
+            $definition->{$key} = $columninfo->{'validation'}{$key};
+        }
+    }
+    foreach my $key (qw/regex required code/) {
+        if (!exists($definition->{'validation'})) {
+            $definition->{'validation'} = {};
+        }
+        if (exists($columninfo->{validation}{$key})) {
+            $definition->{'validation'}{$key} = $columninfo->{'validation'}{$key};
+        }
+    }
+    foreach my $key ( keys %{$params->{'force'}}) {
+        $definition->{$key} = $params->{'force'}{$key};
+    }
+    
     if ( scalar( grep /$name/, @pks ) ) {
-        return {
-            name         => $name,
-            field_class  => $self->get_field_type_for( $field->{'data_type'} ),
-            render_hints => { field_type => "hidden" }
-        };
+        
+        $definition->{'render_hints'} = { 'field_type' => 'hidden' };
     }
 
-    return {
-        name          => $name,
-        field_class   => $self->get_field_type_for( $field->{'data_type'} ),
-        render_hints  => $field->{'render_hints'} || {},
-        default_value => $field->{'default_form_value'}
-          if exists $field->{'default_form_value'},
-    };
+    ## default value handling?  do we bother here?
+
+    return $definition;
 }
 
 __PACKAGE__->meta->make_immutable;
