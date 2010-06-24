@@ -34,7 +34,7 @@ has 'field_type_map' => (
                                         },
                             datetime =>  { 
                                             field_class => 'Text', 
-                                         }
+                                         },
                             enum     =>  {  
                                             field_class => 'Select',
                                          },
