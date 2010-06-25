@@ -24,7 +24,6 @@ my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer = Form::Sensible->get_renderer('HTML');
 
 $form->add_field($submit_button);
-warn "reflector form: " . Dumper $form;
 my $form2 = Form::Sensible->create_form(
     {
         name   => 'test',
