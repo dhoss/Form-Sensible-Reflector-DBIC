@@ -133,7 +133,6 @@ sub get_field_definition {
     }
 
     ## default value handling?  do we bother here?
-    warn "Definition: " . Dumper $definition;
     return $definition;
 }
 
