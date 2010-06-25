@@ -33,48 +33,62 @@ my $form2 = Form::Sensible->create_form(
             {
                 field_class => 'Text',
                 name        => 'username',
-                validation  => {}, 
+                validation  => {
+                    regex => qr/^(.+){3,}$/
+                }, 
             },
             {
                 field_class => 'FileSelector',
                 name        => 'file_upload',
-                validation  => {}, 
+                validation  => {}, # wtf do we validate here?
             },
             {
                 field_class => 'Text',
                 name        => 'date',
                 default_form_value => $dt,
-                validation  => {}, 
+                validation  => {
+                    regex => qr/^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+                }, 
             },
             {
                 field_class => 'LongText',
                 name        => 'big_text',
-                validation  => {}, 
+                validation  => {
+                    regex => qr/^(.+){3,}$/
+                }, 
             },
             {
                 field_class => 'Number',
                 name        => 'number',
                 integer_only => 1,
-                validation  => {}, 
+                validation  => {
+                    regex => qr/^[0-9]+$/,    
+                }, 
             },
             {
                 field_class => 'Number',
                 name        => 'decimal',
-                validation  => {}, 
+                validation  => {
+                    regex => qr/^[0-9]\.[0-9]+$/,
+                }, 
 
             },
             {
                 field_class => 'Number',
                 name        => 'big_number',
                 integer_only => 1,
-                validation  => {}, 
+                validation  => {
+                    regex =>  qr/^[0-9]+$/,    
+                }, 
             },
 
             {
                 field_class  => 'Text',
                 name         => 'password',
                 render_hints => { field_type => 'password' },
-                validation  => {}, 
+                validation  => {
+                    regex => qr/^(?=.+\d)(?=.+[a-z])(?=.+[A-Z]).{8,}$/    
+                }, 
             },
             {
                 field_class => 'Trigger',

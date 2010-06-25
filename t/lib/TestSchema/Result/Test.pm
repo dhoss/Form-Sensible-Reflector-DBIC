@@ -10,6 +10,9 @@ __PACKAGE__->add_columns(
         data_type   => 'varchar',
         size        => '40',
         is_nullable => 0,
+        validation  => {
+            regex => qr/^(.+){3,}$/
+        },
 
     },
 	'file_upload',
@@ -22,34 +25,54 @@ __PACKAGE__->add_columns(
 		data_type   => 'datetime',
 		is_nullable => 0,
 		default_form_value => DateTime->now,
+        validation  => {
+            regex => qr/^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+        },
 	},
 	'big_text',
 	{
 		data_type   => 'text',
 		is_nullable =>0,
 		size        => '4096',
+        validation  => {
+            regex => qr/^(.+){3,}$/,
+        },
 	},
 	'number',
 	{
 		data_type   => 'int',
 		is_nullable => 0,
+        validation => {
+            regex => qr/^[0-9]+$/,
+        },
 	},
 	'decimal',
 	{
 		data_type   => 'decimal',
 		is_nullable => 0,
+        validation  => {
+            regex => qr/^[0-9]\.[0-9]+$/,
+        },
 	},
 	'big_number',
 	{
 		data_type   => 'bigint',
 		is_nullabel => 0,
+        validation  => {
+            regex  => qr/^[0-9]+$/,
+        },
 	},
     'password',
     {
         data_type   => 'varchar',
         size        => '40',
         is_nullable => 0,
-        validation => { render_hints => { field_type => 'password' }}, 
+        validation => { 
+            render_hints => { 
+                field_type => 'password' 
+            },
+            regex => qr/^(?=.+\d)(?=.+[a-z])(?=.+[A-Z]).{8,}$/,
+        }, 
     },
 );
 
