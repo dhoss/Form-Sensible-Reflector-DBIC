@@ -49,7 +49,7 @@ __PACKAGE__->add_columns(
         data_type   => 'varchar',
         size        => '40',
         is_nullable => 0,
-        render_hints => { field_type => 'password' },
+        validation => { render_hints => { field_type => 'password' }}, 
     },
 );
 

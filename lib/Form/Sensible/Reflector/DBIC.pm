@@ -3,7 +3,9 @@ use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Reflector';
 our $VERSION = "0.0342";
+$VERSION = eval $VERSION;
 
+use Data::Dumper;
 # ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes
 
 =head2 $self->get_types
@@ -22,7 +24,7 @@ has 'field_type_map' => (
     default   => sub { 
                         return {
                             varchar  => {
-                                            field_class => 'LongText',
+                                            field_class => 'Text',
                                             parameter_names => [qw/minimum_length maximum_length should_truncate/],
                                         },
                             text     => {
@@ -100,17 +102,18 @@ sub get_field_definition {
     my $columninfo = $resultset->result_source->column_info($name);
     
     my $params = $self->get_field_type_for( $columninfo->{'data_type'});
-    
+
     my $definition = { 
                         name => $name,
-                        field_class => $params->{'fieldclass'} 
+                        field_class => $params->{'field_class'} 
                      };
-                     
+
     foreach my $key (@{$params->{'parameter_names'}}, qw/render_hints/ ) {
         if (exists($columninfo->{'validation'}{$key})) {
             $definition->{$key} = $columninfo->{'validation'}{$key};
         }
     }
+
     foreach my $key (qw/regex required code/) {
         if (!exists($definition->{'validation'})) {
             $definition->{'validation'} = {};
@@ -119,6 +122,7 @@ sub get_field_definition {
             $definition->{'validation'}{$key} = $columninfo->{'validation'}{$key};
         }
     }
+
     foreach my $key ( keys %{$params->{'force'}}) {
         $definition->{$key} = $params->{'force'}{$key};
     }
@@ -129,7 +133,7 @@ sub get_field_definition {
     }
 
     ## default value handling?  do we bother here?
-
+    warn "Definition: " . Dumper $definition;
     return $definition;
 }
 

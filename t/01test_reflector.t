@@ -33,50 +33,61 @@ my $form2 = Form::Sensible->create_form(
             {
                 field_class => 'Text',
                 name        => 'username',
+                validation  => {}, 
             },
             {
                 field_class => 'FileSelector',
                 name        => 'file_upload',
+                validation  => {}, 
             },
             {
                 field_class => 'Text',
                 name        => 'date',
-                default_form_value => $dt
+                default_form_value => $dt,
+                validation  => {}, 
             },
             {
                 field_class => 'LongText',
                 name        => 'big_text',
+                validation  => {}, 
             },
             {
                 field_class => 'Number',
                 name        => 'number',
+                integer_only => 1,
+                validation  => {}, 
             },
             {
                 field_class => 'Number',
                 name        => 'decimal',
+                validation  => {}, 
+
             },
             {
                 field_class => 'Number',
                 name        => 'big_number',
+                integer_only => 1,
+                validation  => {}, 
             },
 
             {
                 field_class  => 'Text',
                 name         => 'password',
                 render_hints => { field_type => 'password' },
+                validation  => {}, 
             },
             {
                 field_class => 'Trigger',
-                name        => 'submit'
+                name        => 'submit',
             }
         ],
     }
 );
 
-warn "hand made form: " . Dumper $form2;
 my $renderer2 = Form::Sensible->get_renderer('HTML');
 my $output_2  = $renderer2->render($form2)->complete;
-is_deeply( $form, $form2, "form one hash matches form two hash" );
+warn "hand made: " . Dumper $form2;
+is_deeply( $form->flatten, $form2->flatten, "form one hash matches form two hash" );
 cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 
 done_testing;
