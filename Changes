@@ -1,3 +1,6 @@
+0.343   2010-06-25
+ - added new API changes to make compatible with FSDelegateConnection stuff
+ - added ability to define validation inside schema
 0.342   2010-02-26
  - fixed docs
  - added default_form_value for *inside* schemas, rendered as default_value in the form
