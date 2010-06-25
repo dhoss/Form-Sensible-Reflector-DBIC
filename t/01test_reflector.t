@@ -24,7 +24,6 @@ my $submit_button = Form::Sensible::Field::Trigger->new( name => 'submit' );
 my $renderer = Form::Sensible->get_renderer('HTML');
 
 $form->add_field($submit_button);
-my $output = $renderer->render($form)->complete;
 warn "reflector form: " . Dumper $form;
 my $form2 = Form::Sensible->create_form(
     {
@@ -122,8 +121,6 @@ $form->set_values($good_values);
 $form2->set_values($good_values);
 my $v1 = $form->validate;
 my $v2 = $form2->validate;
-warn "v1: " . Dumper $v1;
-warn "v2: ". Dumper $v2;
 ok( $v1->is_valid, "form 1 valid");
 ok( $v2->is_valid, "form 2 valid");
 
@@ -134,10 +131,14 @@ my $bv2 = $form2->validate;
 
 ok( !$bv1->is_valid, "form 1 invalid" );
 ok( !$bv2->is_valid, "form 2 invalid" );
-
+$form->set_values($good_values);
+$form2->set_values($good_values);
 my $renderer2 = Form::Sensible->get_renderer('HTML');
+my $output = $renderer->render($form)->complete;
 my $output_2  = $renderer2->render($form2)->complete;
 is_deeply( $form->flatten, $form2->flatten, "form one hash matches form two hash" );
+
+
 cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 
 done_testing;
