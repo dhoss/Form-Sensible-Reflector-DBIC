@@ -26,7 +26,7 @@ __PACKAGE__->add_columns(
 		is_nullable => 0,
 		default_form_value => DateTime->now,
         validation  => {
-            regex => qr/^(\d\d\d\d)(\d\d)(\d\d)(\d\d)(\d\d)(\d\d)$/,
+            regex => qr/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,
         },
 	},
 	'big_text',
@@ -51,7 +51,7 @@ __PACKAGE__->add_columns(
 		data_type   => 'decimal',
 		is_nullable => 0,
         validation  => {
-            regex => qr/^[0-9]\.[0-9]+$/,
+            regex => qr/^(\d.+)\.(\d.+)$/,
         },
 	},
 	'big_number',
@@ -71,7 +71,7 @@ __PACKAGE__->add_columns(
             render_hints => { 
                 field_type => 'password' 
             },
-            regex => qr/^(?=.+\d)(?=.+[a-z])(?=.+[A-Z]).{8,}$/,
+            regex => qr/^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/,
         }, 
     },
 );
