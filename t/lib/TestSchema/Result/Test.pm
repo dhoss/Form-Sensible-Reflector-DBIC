@@ -1,8 +1,7 @@
 package TestSchema::Result::Test;
-use base qw/DBIx::Class/;
+use base qw/DBIx::Class::Core/;
 use DateTime;
 
-__PACKAGE__->load_components(qw/ Core  /);
 __PACKAGE__->table('user');
 __PACKAGE__->add_columns(
     'username',
@@ -74,6 +73,14 @@ __PACKAGE__->add_columns(
             regex => qr/^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/,
         }, 
     },
+);
+
+__PACKAGE__->set_primary_key('username');
+
+__PACKAGE__->has_many('posts' => 'TestSchema::Result::TestRel',
+    {
+        'foreign.author' => 'self.username'
+    }
 );
 
 1;
