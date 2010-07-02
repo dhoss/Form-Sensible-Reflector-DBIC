@@ -9,11 +9,9 @@ use Data::Dumper;
 
 # ABSTRACT: A Form::Sensible::Form::Reflector subclass to reflect off of DBIC schema classes
 
-=head2 $self->get_types
+=head2 $self->field_type_map
 
-this is an internal and private method used solely for organizing the hashmap 
-of datatypes to Form::Sensible types.  Use something like this to organize your
-own reflector subclass datatypes.
+This is just an attribute that returns a complex data structure (HoH mostly) of the field type definitions map.
 
 =cut
 
@@ -69,6 +67,14 @@ has 'field_type_map' => (
     },
 );
 
+=head2 $self->enable_relationships
+
+Follow relationships in your schema.
+
+Default: disabled (0)
+
+=cut
+
 =head2 $self->get_field_types_for($datatype)
 
 This gets field definitions for a given datatype and returns them in hashref form.
@@ -92,7 +98,9 @@ sub get_fieldnames {
 }
 
 =head1 $self->get_relationships
+
 wrapper around DBIC's C<relationships> method
+
 =cut
 
 sub get_relationships {
@@ -101,8 +109,10 @@ sub get_relationships {
 }
 
 =head1 $self->follow_relationship
+
 Follow a relationship given the resultset and relationship name.
 Return field definitions for the related columns
+
 =cut
 
 sub follow_relationship {
@@ -129,12 +139,50 @@ sub follow_relationship {
     return $column_info;
 }
 
+=head2 $self->get_field_validation
+
+Get validation for a field given its definition
+
+=cut
+
+sub get_field_validation {
+    my ($self, $field_params) = @_;
+    
+    my $definition;
+
+    ## take everything from validation in your DBIC schema and translate it to
+    ## an F::S happy hash
+    foreach my $key ( @{ $field_params->{'parameter_names'} }, qw/render_hints/ ) {
+        if ( exists( $field_params->{'validation'}{$key} ) ) {
+            $definition->{$key} = $field_params->{'validation'}{$key};
+        }
+    }
+
+
+    ## same as the above, but for validation constraints
+    foreach my $key (qw/regex required code/) {
+        if ( !exists( $definition->{'validation'} ) ) {
+            $definition->{'validation'} = {};
+        }
+        if ( exists( $field_params->{validation}{$key} ) ) {
+            $definition->{'validation'}{$key} =
+              $field_params->{'validation'}{$key};
+        }
+   } 
+    
+    ## see above
+    foreach my $key ( keys %{ $field_params->{'force'} } ) {
+        $definition->{$key} = $field_params->{'force'}{$key};
+    }
+
+    return $definition;
+}
+
 =head1 $self->get_field_definition()
 =cut
 
 sub get_field_definition {
     my ( $self, $form, $resultset, $name ) = @_;
-    ## TODO: Follow relationships
 
     ## check to see if it's a primary key
     my @pks        = $resultset->result_source->primary_columns;
@@ -147,30 +195,6 @@ sub get_field_definition {
         field_class => $params->{'field_class'}
     };
 
-    ## take everything from validation in your DBIC schema and translate it to
-    ## an F::S happy hash
-    foreach my $key ( @{ $params->{'parameter_names'} }, qw/render_hints/ ) {
-        if ( exists( $columninfo->{'validation'}{$key} ) ) {
-            $definition->{$key} = $columninfo->{'validation'}{$key};
-        }
-    }
-
-    ## same as the above, but for validation constraints
-    foreach my $key (qw/regex required code/) {
-        if ( !exists( $definition->{'validation'} ) ) {
-            $definition->{'validation'} = {};
-        }
-        if ( exists( $columninfo->{validation}{$key} ) ) {
-            $definition->{'validation'}{$key} =
-              $columninfo->{'validation'}{$key};
-        }
-    }
-
-    ## see above
-    foreach my $key ( keys %{ $params->{'force'} } ) {
-        $definition->{$key} = $params->{'force'}{$key};
-    }
-
     ## render primary key columns hidden by default
     if ( scalar( grep /$name/, @pks ) ) {
 
@@ -180,12 +204,23 @@ sub get_field_definition {
     my @relationships = $self->get_relationships($resultset)
       ;    ## we really need to cache this motherfucker in a moose attr
     warn "found relationships: " . Dumper @relationships;
+    ## add an option to enable/disable rel following
 
+    ## this is probably awful
+    my $rel_field;
+    my $relationship_info; 
     for my $rel (@relationships) {
         if ( $resultset->result_source->has_relationship($rel) ) {
-            $self->follow_relationship( $resultset, $rel );
+            $relationship_info = $self->follow_relationship( $resultset, $rel );
+            my $rel_field = {
+                $self->get_field_type_for( $relationship_info->{'data_type'} ),
+                $self->get_field_validation( $relationship_info ),
+            };
+            warn "relfield: " . Dumper $rel_field;
+            $definition->{$rel} = $rel_field;
         }
     }
+    warn "definition w/ relationships: " . Dumper $definition;
     return $definition;
 
 }
