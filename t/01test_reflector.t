@@ -137,7 +137,7 @@ my $output = $renderer->render($form)->complete;
 my $output_2  = $renderer2->render($form2)->complete;
 is_deeply( $form->flatten, $form2->flatten, "form one hash matches form two hash" );
 
-
+cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
 
 done_testing;
