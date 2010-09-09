@@ -10,3 +10,4 @@ tests?
 save method? $form = Form::Sensible::Form::Reflector::DBIC->create_form(...);
 #...
 $form->save; # ?
+normalize case, fields shouldn't have to be case sensitive
