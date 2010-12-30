@@ -1,7 +1,4 @@
 TODO:
-Add more types - better handling of subtypes (smallint, mediumint, etc.)
-Add constraints if known (float vs. int, etc. )
-Add validation 
 Add Reflecting from row objects in addition to ResultSet (default values?)
 provide for field omitting - via should_process_field_delegate
 add relationship following - on simple relationships

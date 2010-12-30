@@ -1,3 +1,6 @@
+0.344   2010-11-28
+ - added form name auto-detection code
+ - adjusted to accept resultset, row, or result_source as a handle.
 0.343   2010-06-25
  - added new API changes to make compatible with FSDelegateConnection stuff
  - added ability to define validation inside schema
