@@ -1,6 +1,7 @@
 0.345   2010-01-26
  - fixed tests to pass with current Form::Sensible
  - updated dist.ini with new dzil api requirements
+ - added Form::Sensible::Reflector as dependency
 0.344   2010-11-28
  - added form name auto-detection code
  - adjusted to accept resultset, row, or result_source as a handle.
