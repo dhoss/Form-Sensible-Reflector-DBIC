@@ -2,7 +2,7 @@ package Form::Sensible::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Reflector';
-our $VERSION = "0.0345";
+our $VERSION = "0.0346";
 $VERSION = eval $VERSION;
 
 use Data::Dumper;
