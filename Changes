@@ -1,4 +1,8 @@
-0.346   2010-01-26
+0.347   2011-1-31
+ - moved reflector with_trigger stuff per jayk's patch/pull request
+   (https://github.com/jayk/Form-Sensible-Reflector-DBIC/commit/85231d912bc5af1e159aa335d76ff812d37ee0ef)
+ - fixed tests
+0.346   2011-01-26
  - fixed tests to pass with current Form::Sensible
  - updated dist.ini with new dzil api requirements
  - added Form::Sensible::Reflector as dependency
