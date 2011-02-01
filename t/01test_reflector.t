@@ -19,9 +19,9 @@ use Data::Dumper;
 my $dt        = DateTime->now;
 
 # reflector WITH a submit button;
-my $reflector = Form::Sensible::Reflector::DBIC->new( with_trigger => 1 );
+my $reflector = Form::Sensible::Reflector::DBIC->new();
 my $form      = $reflector->reflect_from( $schema->resultset("Test"),
-    { form => { name => 'test' } } );
+    { form => { name => 'test' }, with_trigger => 1 } );
 my $renderer = Form::Sensible->get_renderer('HTML');
 
 my $form2 = Form::Sensible->create_form(

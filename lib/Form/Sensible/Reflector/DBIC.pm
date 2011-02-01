@@ -325,11 +325,12 @@ Form::Sensible::Reflector::DBIC - A reflector class based on Form::Sensible and 
 
 	my $dt = DateTime->now;
 
-	my $reflector = Form::Sensible::Reflector::DBIC->new( with_trigger => 1);
+	my $reflector = Form::Sensible::Reflector::DBIC->new();
 	my $form      = $reflector->reflect_from(
 	    $schema->resultset("Test"),
 	    {
-	        form   => { name => 'test' }
+	        form   => { name => 'test' },
+	         with_trigger => 1
 	    }
 	);
 	my $renderer = Form::Sensible->get_renderer('HTML');
