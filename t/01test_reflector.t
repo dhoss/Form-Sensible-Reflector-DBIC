@@ -96,10 +96,6 @@ my $form2 = Form::Sensible->create_form(
                     required => 1,
                 }, 
             },
-            {
-                field_class => 'Trigger',
-                name        => 'submit',
-            }
         ],
     }
 );
