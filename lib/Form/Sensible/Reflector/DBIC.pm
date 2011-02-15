@@ -71,6 +71,12 @@ Form::Sensible::Field definition. Any of the attributes accepted by
 Form::Sensible::Field are acceptable here. Note that one could alternatively
 specify C<validation> and C<render_hints> options here.
 
+=item fs_ignore
+
+If this key is present with a true value, this column will not be included in the
+Form::Sensible form at all. This may be handy for skipping over timestamps automatically
+populated by the database, for instance.
+
 =back
 
 For example:
@@ -305,6 +311,8 @@ sub get_field_definition {
     my @pks           = $result_source->primary_columns;
     my $columninfo    = $result_source->column_info($name);
 
+    return if $columninfo->{fs_ignore};
+
     ## this does the basics of the field definitions including field mapping.  Then we
     ## do some general stuff that applies to ALL field types...
 
@@ -398,6 +406,8 @@ __PACKAGE__->meta->make_immutable;
 =item Jay Kuri <jayk@cpan.org>
 
 =item Andrew Moore <amoore@cpan.org>
+
+=item Alan Rafagudinov <alan.rafagudinov@ionzero.com>
 
 =back
 
