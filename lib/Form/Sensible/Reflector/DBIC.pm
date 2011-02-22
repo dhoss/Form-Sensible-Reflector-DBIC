@@ -38,6 +38,24 @@ Form::Sensible::Reflector::DBIC - A reflector class based on Form::Sensible and 
 	$form->set_values( { date => $dt } );
 	my $output = $renderer->render($form)->complete;
 
+=head1 DESCRIPTION
+
+Form::Sensible::DBIC::Reflector allows you to create Form::Sensible forms from
+DBIx::Class objects.
+
+=head1 METHODS
+
+=head2 reflect_from
+
+    my $generated_form = $reflector->reflect_from($data_source, $options);
+
+The $data_source parameter can be a DBIx::Class resultsource such as
+$schema->resultset('Table'), or a DBIx::Class::Row object such as
+$schema->resultset('Table')->find( 1 );
+
+Since the reflect_from method is actually provided by Form::Sensible itself,
+please see the Form::Sensible::Reflector documentation for more information
+on the reflect_from method.
 
 =head1 CONFIGURATION OF FIELDS
 

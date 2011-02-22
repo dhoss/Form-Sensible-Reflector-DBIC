@@ -16,6 +16,14 @@ $schema->deploy;
 use Form::Sensible;
 use Form::Sensible::Reflector::DBIC;
 use Data::Dumper;
+
+# Try to use Test::Differences if possible
+BEGIN {
+    if ( !eval q{ use Test::Differences; unified_diff; 1 } ) {
+        *eq_or_diff = \&is_deeply;
+    }
+}
+
 my $dt        = DateTime->now;
 
 # reflector WITH a submit button;
@@ -94,7 +102,11 @@ my $form2 = Form::Sensible->create_form(
                 validation  => {
                     regex => qr/^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/,
                     required => 1,
-                }, 
+                },
+            },
+            {
+                field_class  => 'Trigger',
+                name         => 'submit',
             },
         ],
     }
@@ -102,6 +114,7 @@ my $form2 = Form::Sensible->create_form(
 
 my $good_values = {
      username =>"dhoss",
+     file_upload => 'these are the contents of a file',
      date => "2008-09-01 12:35:45",
      big_text => "asdflkjawofij24fj2i3f4j 2903 dfnqe2fw f",
      number => 123,
@@ -120,30 +133,44 @@ my $bad_values  = {
      password => "a",
 };
 
+my $row = $schema->resultset('Test')->create($good_values);
+isa_ok( $row, 'TestSchema::Result::Test' );
+
+my $form_from_row = $reflector->reflect_from( $row, { form => { name => 'test' }, with_trigger => 1 } );
+
 $form->set_values($good_values);
 $form2->set_values($good_values);
+$form_from_row->set_values($good_values);
 my $v1 = $form->validate;
 my $v2 = $form2->validate;
-TODO:{
-    local $TODO =  "These need fixing";
-ok( $v1->is_valid, "form 1 valid");
-ok( $v2->is_valid, "form 2 valid");
-$form->set_values($bad_values);
-$form2->set_values($bad_values);
-my $bv1 = $form->validate;
-my $bv2 = $form2->validate;
+my $v3 = $form_from_row->validate;
+TODO: {
+    local $TODO = "These need fixing";
+    ok( $v1->is_valid, "form 1 valid" );
+    ok( $v2->is_valid, "form 2 valid" );
+    ok( $v3->is_valid, "form from row is valid" );
+    $form->set_values($bad_values);
+    $form2->set_values($bad_values);
+    $form_from_row->set_values($bad_values);
+    my $bv1 = $form->validate;
+    my $bv2 = $form2->validate;
+    my $bv3 = $form_from_row->validate;
 
-ok( !$bv1->is_valid, "form 1 invalid" );
-ok( !$bv2->is_valid, "form 2 invalid" );
-$form->set_values($good_values);
-$form2->set_values($good_values);
+    ok( !$bv1->is_valid, "form 1 invalid" );
+    ok( !$bv2->is_valid, "form 2 invalid" );
+    ok( !$bv3->is_valid, "form from row invalid" );
+    $form->set_values($good_values);
+    $form2->set_values($good_values);
+    $form_from_row->set_values($good_values);
 }
 my $renderer2 = Form::Sensible->get_renderer('HTML');
 my $output = $renderer->render($form)->complete;
 my $output_2  = $renderer2->render($form2)->complete;
+my $output_3  = $renderer2->render($form_from_row)->complete;
 is_deeply( $form->flatten, $form2->flatten, "form one hash matches form two hash" );
+is_deeply( $form_from_row->flatten, $form->flatten, "flattened form from row matches flattened original form" );
 
-cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
-cmp_ok( $output, 'eq', $output_2, "Flat eq to pulled from DBIC" );
+eq_or_diff( $output, $output_2, "Output from flat eq to pulled from DBIC" );
+eq_or_diff( $output_2, $output_3, "Output from flat eq to output from form from row" );
 
 done_testing;
