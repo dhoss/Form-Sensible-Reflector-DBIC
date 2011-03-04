@@ -308,7 +308,45 @@ sub get_field_definition {
     ## this does the basics of the field definitions including field mapping.  Then we
     ## do some general stuff that applies to ALL field types...
 
-    my $definition = $self->get_base_definition( $name, $columninfo );
+    my $definition;
+
+    if ( $columninfo->{fs_select_name_column} ) {
+        $columninfo->{fs_select_value_column} ||= $columninfo->{fs_select_name_column};
+    }
+
+    if ( $columninfo->{fs_select_value_column} ) {
+        $columninfo->{fs_select_name_column} ||= $columninfo->{fs_select_value_column};
+    }
+
+    if ( $columninfo->{fs_select_name_column} && $columninfo->{fs_select_value_column} ) {
+        $definition->{field_class} = 'Select';
+
+        for ($result_source->relationships) {
+            my $relationship_info = $result_source->relationship_info($_);
+            my $cond = $relationship_info->{cond};
+
+            if ( grep { $cond->{$_} eq "self.$name" } keys %$cond ) {
+                my $fs_select_name_column = $columninfo->{fs_select_name_column};
+                my $fs_select_value_column = $columninfo->{fs_select_value_column};
+
+                $relationship_info->{source} =~ /:?(\w+)$/;
+
+                $definition->{options} = [
+                    map {
+                        {
+                            name => $_->$fs_select_name_column,
+                            value => $_->$fs_select_value_column,
+                        }
+                    } $result_source->schema->resultset($1)->all
+                ];
+
+                last;
+            }
+        }
+    }
+    else {
+        $definition = $self->get_base_definition( $name, $columninfo );
+    }
 
     if ( !exists( $definition->{'validation'} ) ) {
         $definition->{'validation'} = {};

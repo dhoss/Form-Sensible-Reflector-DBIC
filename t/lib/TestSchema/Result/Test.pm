@@ -74,6 +74,14 @@ __PACKAGE__->add_columns(
             regex => qr/^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/,
         }, 
     },
+    'country_id',
+    {
+        data_type   => 'int',
+        fs_select_value_column => 'id',
+        fs_select_name_column => 'country',
+    },
 );
+
+__PACKAGE__->belongs_to('country' => 'TestSchema::Result::Country', 'country_id');
 
 1;
