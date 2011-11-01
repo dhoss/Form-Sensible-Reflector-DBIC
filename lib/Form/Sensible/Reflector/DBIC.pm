@@ -5,8 +5,6 @@ extends 'Form::Sensible::Reflector';
 our $VERSION = "0.349";
 $VERSION = eval $VERSION;
 
-use Data::Dumper;
-
 # ABSTRACT: A Form::Sensible::Reflector subclass to reflect off of DBIC schema classes
 
 =head1 NAME 
