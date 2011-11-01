@@ -265,8 +265,8 @@ sub get_field_definition {
   }
 
   ## if the column is part of the primary key, we default to hiding it on the form.
-  if ( scalar( grep /$name/, @pks ) ) {
-    if ( !exists( $columninfo->{render_hints}{field_type} ) ) {
+  if ( grep /$name/, @pks ) {
+    if ( $columninfo->{is_auto_increment} && !exists( $columninfo->{render_hints}{field_type} ) ) {
       $definition->{'render_hints'} = { 'field_type' => 'hidden' };
     }
   }
