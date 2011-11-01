@@ -2,6 +2,10 @@ package Form::Sensible::Reflector::DBIC;
 use Moose;
 use namespace::autoclean;
 extends 'Form::Sensible::Reflector';
+
+with 'Form::Sensible::Reflector::DBIC::Role::FieldClassOptions',
+     'Form::Sensible::Reflector::DBIC::Role::FieldTypeMap';
+
 our $VERSION = "0.349";
 $VERSION = eval $VERSION;
 
@@ -120,108 +124,11 @@ Hashref of the supported DBMS type->form element translations.
 
 =cut
 
-## this should be in a role
-has 'field_type_map' => (
-  is       => 'rw',
-  isa      => 'HashRef',
-  required => 1,
-  lazy     => 1,
-  default  => sub {
-    return {
-      varchar  => { defaults => { field_class => 'Text', }, },
-      text     => { defaults => { field_class => 'LongText', }, },
-      blob     => { defaults => { field_class => 'FileSelector' }, },
-      datetime => { defaults => { field_class => 'Text', }, },
-      enum     => { defaults => { field_class => 'Select', }, },
-      int      => {
-        defaults => {
-          field_class  => 'Number',
-          integer_only => 1,
-        },
-      },
-      integer => {
-        defaults => {
-          field_class  => 'Number',
-          integer_only => 1,
-        },
-      },
-      bigint => {
-        defaults => {
-          field_class  => 'Number',
-          integer_only => 1,
-        },
-      },
-      bool => {
-        defaults => {
-          field_class => 'Toggle',
-          on_value    => 1,
-          on_label    => 'yes',
-          off_value   => 0,
-          off_label   => 'no'
-        },
-      },
-      decimal => {
-        defaults => {
-          field_class  => 'Number',
-          integer_only => 0,
-        },
-      },
-    };
-  },
-);
-
 =head2 $self->field_class_options
 
 Default options for L<Form::Sensible> field classes.
 
 =cut
-
-## this should also be in a role
-has 'field_class_options' => (
-  is       => 'rw',
-  isa      => 'HashRef',
-  required => 1,
-  lazy     => 1,
-  default  => sub {
-    return {
-      'Number' => {
-        'validation' => {
-          'integer_only' => 'integer_only',
-          'upper_bound'  => 'upper_bound',
-          'lower_bound'  => 'lower_bound',
-          'step'         => 'step',
-        },
-      },
-      'Toggle' => {
-        'render_hints' => {
-          'on_value'  => 'on_value',
-          'on_label'  => 'on_label',
-          'off_value' => 'off_value',
-          'off_label' => 'off_label',
-        },
-      },
-      'Text' => {
-        'validation' => {
-          'size'            => 'maximum_length',
-          'minimum_length'  => 'minimum_length',
-          'maximum_length'  => 'maximum_length',
-          'should_truncate' => 'should_truncate',
-        },
-      },
-      'LongText' => {
-        'validation' => {
-          'size'            => 'maximum_length',
-          'minimum_length'  => 'minimum_length',
-          'maximum_length'  => 'maximum_length',
-          'should_truncate' => 'should_truncate',
-        },
-      },
-      'FileSelector' => { 'validation' => { 'size' => 'maximum_size', }, },
-      'Select' =>
-        { 'validation' => { 'options_delegate' => 'options_delegate', }, },
-    };
-  }
-);
 
 =head2 $self->get_base_definition($name, $datatype)
 
