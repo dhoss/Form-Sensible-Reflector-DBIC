@@ -3,11 +3,13 @@ use Moose::Role;
 use namespace::autoclean;
 
 has 'field_class_options' => (
-  is       => 'rw',
-  isa      => 'HashRef',
-  required => 1,
-  lazy     => 1,
-  default  => sub {
+  is         => 'rw',
+  isa        => 'HashRef',
+  required   => 1,
+  lazy_build => 1,
+);
+
+sub _build_field_class_options {
     return {
       'Number' => {
         'validation' => {
@@ -45,7 +47,6 @@ has 'field_class_options' => (
       'Select' =>
         { 'validation' => { 'options_delegate' => 'options_delegate', }, },
     };
-  }
-);
+}
 
 1;

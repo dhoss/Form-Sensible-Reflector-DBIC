@@ -2,12 +2,14 @@ package Form::Sensible::Reflector::DBIC::Role::FieldTypeMap;
 use Moose::Role;
 use namespace::autoclean;
 
-has 'field_type_map' => (
-  is       => 'rw',
-  isa      => 'HashRef',
-  required => 1,
-  lazy     => 1,
-  default  => sub {
+has field_type_map => (
+  is         => 'rw',
+  isa        => 'HashRef',
+  required   => 1,
+  lazy_build => 1,
+);
+
+sub _build_field_type_map {
     return {
       varchar  => { defaults => { field_class => 'Text', }, },
       text     => { defaults => { field_class => 'LongText', }, },
@@ -48,7 +50,6 @@ has 'field_type_map' => (
         },
       },
     };
-  },
-);
+};
 
 1;
