@@ -36,6 +36,13 @@ my $form2 = Form::Sensible->create_form(
     name   => 'test',
     fields => [
       {
+        name       => 'id',
+        field_class => 'Number',
+        integer_only => 1,
+        render_hints => { 'field_type' => 'hidden' },
+        validation  => { required => 1, },
+      },
+      {
         field_class => 'Text',
         name        => 'username',
         validation  => {
