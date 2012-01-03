@@ -116,6 +116,40 @@ For example:
     );
     __PACKAGE__->set_primary_key('id');  # Defaults to hidden in the form
 
+=head1 WAYS TO REFLECT
+
+=over 4
+
+=item From a ResultSet:
+
+    my $reflector = Form::Sensible::Reflector::DBIC->new();
+    my $form      = $reflector->reflect_from( $schema->resultset("Test"),
+      { 
+        form => 
+        { 
+          name => 'test' 
+        }, 
+        with_trigger => 1 
+      } 
+    );
+
+=item From a Row object:
+  
+  my $reflector     = Form::Sensible::Reflector::DBIC->new();
+  my $row           = $schema->resultset('Herp')->create($derp);
+  my $form_from_row = $reflector->reflect_from( $row,  
+    { 
+      form => 
+        { 
+          name => 'test' 
+        }, 
+        with_trigger => 1 
+    } 
+  );
+
+=back
+
+
 =head1 INTERNAL METHODS
 
 =head2 $self->field_type_map 
