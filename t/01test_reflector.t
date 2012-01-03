@@ -11,19 +11,26 @@ my @dirs = split '/', $lib_dir;
 pop @dirs;
 $lib_dir = join( '/', @dirs );
 chomp $lib_dir;
-my $schema = TestSchema->connect('dbi:SQLite::memory:');
-$schema->deploy;
 use Form::Sensible;
 use Form::Sensible::Reflector::DBIC;
 use Data::Dumper;
 
 # Try to use Test::Differences if possible
 BEGIN {
-    if ( !eval q{ use Test::Differences; unified_diff; 1 } ) {
-        *eq_or_diff = \&is_deeply;
-    }
+  if ( !eval q{ use Test::Differences; unified_diff; 1 } ) {
+    *eq_or_diff = \&is_deeply;
+  }
 }
 my $dt = DateTime->now;
+
+my $schema = TestSchema->connect('dbi:SQLite::memory:');
+$schema->deploy;
+
+for (qw/Russia USA Germany Panama France/) {
+    $schema->resultset("Country")->create({
+        country => $_
+    });
+}
 
 # reflector WITH a submit button;
 my $reflector = Form::Sensible::Reflector::DBIC->new();
@@ -36,11 +43,11 @@ my $form2 = Form::Sensible->create_form(
     name   => 'test',
     fields => [
       {
-        name       => 'id',
-        field_class => 'Number',
+        name         => 'id',
+        field_class  => 'Number',
         integer_only => 1,
         render_hints => { 'field_type' => 'hidden' },
-        validation  => { required => 1, },
+        validation   => { required => 1, },
       },
       {
         field_class => 'Text',
@@ -108,6 +115,32 @@ my $form2 = Form::Sensible->create_form(
         },
       },
       {
+        field_class => 'Select',
+        name        => 'country_id',
+        options     => [
+          {
+            'value' => 1,
+            'name'  => 'Russia'
+          },
+          {
+            'value' => 2,
+            'name'  => 'USA'
+          },
+          {
+            'value' => 3,
+            'name'  => 'Germany'
+          },
+          {
+            'value' => 4,
+            'name'  => 'Panama'
+          },
+          {
+            'value' => 5,
+            'name'  => 'France'
+          }
+        ],
+      },
+      {
         field_class => 'Trigger',
         name        => 'submit',
       },
@@ -124,6 +157,7 @@ my $good_values = {
   decimal     => 12.34,
   big_number  => 1243567,
   password    => "mMMmm123",
+  country_id  => 1
 };
 
 my $bad_values = {
@@ -139,7 +173,9 @@ my $bad_values = {
 my $row = $schema->resultset('Test')->create($good_values);
 isa_ok( $row, 'TestSchema::Result::Test' );
 
-my $form_from_row = $reflector->reflect_from( $row, { form => { name => 'test' }, with_trigger => 1 } );
+my $form_from_row =
+  $reflector->reflect_from( $row,
+  { form => { name => 'test' }, with_trigger => 1 } );
 
 $form->set_values($good_values);
 $form2->set_values($good_values);
@@ -148,32 +184,35 @@ my $v1 = $form->validate;
 my $v2 = $form2->validate;
 my $v3 = $form_from_row->validate;
 TODO: {
-    local $TODO = "These need fixing";
-    ok( $v1->is_valid, "form 1 valid" );
-    ok( $v2->is_valid, "form 2 valid" );
-    ok( $v3->is_valid, "form from row is valid" );
-    $form->set_values($bad_values);
-    $form2->set_values($bad_values);
-    $form_from_row->set_values($bad_values);
-    my $bv1 = $form->validate;
-    my $bv2 = $form2->validate;
-    my $bv3 = $form_from_row->validate;
+  local $TODO = "These need fixing";
+  ok( $v1->is_valid, "form 1 valid" );
+  ok( $v2->is_valid, "form 2 valid" );
+  ok( $v3->is_valid, "form from row is valid" );
+  $form->set_values($bad_values);
+  $form2->set_values($bad_values);
+  $form_from_row->set_values($bad_values);
+  my $bv1 = $form->validate;
+  my $bv2 = $form2->validate;
+  my $bv3 = $form_from_row->validate;
 
-    ok( !$bv1->is_valid, "form 1 invalid" );
-    ok( !$bv2->is_valid, "form 2 invalid" );
-    ok( !$bv3->is_valid, "form from row invalid" );
-    $form->set_values($good_values);
-    $form2->set_values($good_values);
-    $form_from_row->set_values($good_values);
+  ok( !$bv1->is_valid, "form 1 invalid" );
+  ok( !$bv2->is_valid, "form 2 invalid" );
+  ok( !$bv3->is_valid, "form from row invalid" );
+  $form->set_values($good_values);
+  $form2->set_values($good_values);
+  $form_from_row->set_values($good_values);
 }
 my $renderer2 = Form::Sensible->get_renderer('HTML');
 my $output    = $renderer->render($form)->complete;
 my $output_2  = $renderer2->render($form2)->complete;
 my $output_3  = $renderer2->render($form_from_row)->complete;
-is_deeply( $form->flatten, $form2->flatten, "form one hash matches form two hash" );
-is_deeply( $form_from_row->flatten, $form->flatten, "flattened form from row matches flattened original form" );
+is_deeply( $form->flatten, $form2->flatten,
+  "form one hash matches form two hash" );
+is_deeply( $form_from_row->flatten, $form->flatten,
+  "flattened form from row matches flattened original form" );
 
 eq_or_diff( $output, $output_2, "Output from flat eq to pulled from DBIC" );
-eq_or_diff( $output_2, $output_3, "Output from flat eq to output from form from row" );
+eq_or_diff( $output_2, $output_3,
+  "Output from flat eq to output from form from row" );
 
 done_testing;

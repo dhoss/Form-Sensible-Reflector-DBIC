@@ -85,6 +85,7 @@ __PACKAGE__->add_columns(
         data_type   => 'int',
         fs_select_value_column => 'id',
         fs_select_name_column => 'country',
+        is_nullable => 1
     },
 );
 __PACKAGE__->set_primary_key('id');
