@@ -23,114 +23,117 @@ BEGIN {
         *eq_or_diff = \&is_deeply;
     }
 }
-
-my $dt        = DateTime->now;
+my $dt = DateTime->now;
 
 # reflector WITH a submit button;
 my $reflector = Form::Sensible::Reflector::DBIC->new();
 my $form      = $reflector->reflect_from( $schema->resultset("Test"),
-    { form => { name => 'test' }, with_trigger => 1 } );
+  { form => { name => 'test' }, with_trigger => 1 } );
 my $renderer = Form::Sensible->get_renderer('HTML');
 
 my $form2 = Form::Sensible->create_form(
-    {
-        name   => 'test',
-        fields => [
-            {
-                field_class => 'Text',
-                name        => 'username',
-                validation  => {
-                    regex => qr/^(.+){3,}$/,
-                    required => 1,
-                }, 
-            },
-            {
-                field_class => 'FileSelector',
-                name        => 'file_upload',
-                validation  => {
-                    required => 1,
-                }, # wtf do we validate here?
-            },
-            {
-                field_class => 'Text',
-                name        => 'date',
-                default_form_value => $dt,
-                validation  => {
-                    regex => qr/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,
-                    required => 1,
-                }, 
-            },
-            {
-                field_class => 'LongText',
-                name        => 'big_text',
-                validation  => {
-                    regex => qr/^(.+){3,}$/,
-                    required => 1,
-                }, 
-            },
-            {
-                field_class => 'Number',
-                name        => 'number',
-                integer_only => 1,
-                validation  => {
-                    regex => qr/^[0-9]+$/,    
-                    required => 1,
-                }, 
-            },
-            {
-                field_class => 'Number',
-                name        => 'decimal',
-                validation  => {
-                    regex => qr/^(\d.+)\.(\d.+)$/,
-                    required => 1,
-                }, 
+  {
+    name   => 'test',
+    fields => [
+      {
+        name       => 'id',
+        field_class => 'Number',
+        integer_only => 1,
+        render_hints => { 'field_type' => 'hidden' },
+        validation  => { required => 1, },
+      },
+      {
+        field_class => 'Text',
+        name        => 'username',
+        validation  => {
+          regex    => qr/^(.+){3,}$/,
+          required => 1,
+        },
+      },
+      {
+        field_class => 'FileSelector',
+        name        => 'file_upload',
+        validation  => { required => 1, },    # wtf do we validate here?
+      },
+      {
+        field_class        => 'Text',
+        name               => 'date',
+        default_form_value => $dt,
+        validation         => {
+          regex    => qr/^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})$/,
+          required => 1,
+        },
+      },
+      {
+        field_class => 'LongText',
+        name        => 'big_text',
+        validation  => {
+          regex    => qr/^(.+){3,}$/,
+          required => 1,
+        },
+      },
+      {
+        field_class  => 'Number',
+        name         => 'number',
+        integer_only => 1,
+        validation   => {
+          regex    => qr/^[0-9]+$/,
+          required => 1,
+        },
+      },
+      {
+        field_class => 'Number',
+        name        => 'decimal',
+        validation  => {
+          regex    => qr/^(\d.+)\.(\d.+)$/,
+          required => 1,
+        },
 
-            },
-            {
-                field_class => 'Number',
-                name        => 'big_number',
-                integer_only => 1,
-                validation  => {
-                    regex =>  qr/^[0-9]+$/,    
-                    required => 1,
-                }, 
-            },
-
-            {
-                field_class  => 'Text',
-                name         => 'password',
-                validation  => {
-                    regex => qr/^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/,
-                    required => 1,
-                },
-            },
-            {
-                field_class  => 'Trigger',
-                name         => 'submit',
-            },
-        ],
-    }
+      },
+      {
+        field_class  => 'Number',
+        name         => 'big_number',
+        integer_only => 1,
+        validation   => {
+          regex    => qr/^[0-9]+$/,
+          required => 1,
+        },
+      },
+      {
+        field_class => 'Text',
+        name        => 'password',
+        validation  => {
+          regex    => qr/^(?=.{8,})(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).*$/,
+          required => 1,
+        },
+      },
+      {
+        field_class => 'Trigger',
+        name        => 'submit',
+      },
+    ],
+  }
 );
 
 my $good_values = {
-     username =>"dhoss",
-     file_upload => 'these are the contents of a file',
-     date => "2008-09-01 12:35:45",
-     big_text => "asdflkjawofij24fj2i3f4j 2903 dfnqe2fw f",
-     number => 123,
-     decimal => 12.34, 
-     big_number => 1243567, 
-     password => "mMMmm123",
+  username    => "dhoss",
+  file_upload => 'these are the contents of a file',
+  date        => "2008-09-01 12:35:45",
+  big_text    => "asdflkjawofij24fj2i3f4j 2903 dfnqe2fw f",
+  number      => 123,
+  decimal     => 12.34,
+  big_number  => 1243567,
+  password    => "mMMmm123",
 };
 
-my $bad_values  = {
-     username =>"1", 
-     date => "Today", 
-     big_text => "1", 
-     number => "three", 
-     decimal => 1, 
-     big_number => 2, 
-     password => "a",
+my $bad_values = {
+  username   => "1",
+  date       => "Today",
+  big_text   => "1",
+  number     => "three",
+  decimal    => 1,
+  big_number => 2,
+  password   => "a",
 };
 
 my $row = $schema->resultset('Test')->create($good_values);
@@ -164,7 +167,7 @@ TODO: {
     $form_from_row->set_values($good_values);
 }
 my $renderer2 = Form::Sensible->get_renderer('HTML');
-my $output = $renderer->render($form)->complete;
+my $output    = $renderer->render($form)->complete;
 my $output_2  = $renderer2->render($form2)->complete;
 my $output_3  = $renderer2->render($form_from_row)->complete;
 is_deeply( $form->flatten, $form2->flatten, "form one hash matches form two hash" );
