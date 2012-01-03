@@ -5,6 +5,12 @@ use DateTime;
 __PACKAGE__->load_components(qw/ Core  /);
 __PACKAGE__->table('user');
 __PACKAGE__->add_columns(
+    'id',
+    {
+        data_type   => 'int',
+        is_auto_increment => 1,
+        is_primary_key => 1,
+    },
     'username',
     {
         data_type   => 'varchar',
@@ -81,6 +87,7 @@ __PACKAGE__->add_columns(
         fs_select_name_column => 'country',
     },
 );
+__PACKAGE__->set_primary_key('id');
 
 __PACKAGE__->belongs_to('country' => 'TestSchema::Result::Country', 'country_id');
 
