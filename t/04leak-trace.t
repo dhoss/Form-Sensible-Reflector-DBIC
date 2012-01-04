@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 use Test::More;
-use Test::LeakTrace;
+use Test::Weaken qw( leaks );
 use FindBin;
 use lib "$FindBin::Bin/../lib";
 use lib "t/lib";
@@ -20,10 +20,12 @@ my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 
 ## start out basic
-leaktrace { 
+my $test = sub {
   my $reflector = Form::Sensible::Reflector::DBIC->new();
   my $form      = $reflector->reflect_from( $schema->resultset("Test"),
   { form => { name => 'test' }, with_trigger => 1 } );
   my $renderer = Form::Sensible->get_renderer('HTML');
-} -verbose; 
+};
+
+ok !leaks( $test ), "no leaks found in insantiation";
 done_testing();
