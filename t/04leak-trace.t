@@ -25,25 +25,42 @@ my $instantiation = sub {
   my $form      = $reflector->reflect_from( $schema->resultset("Test"),
   { form => { name => 'test' }, with_trigger => 1 } );
   my $renderer = Form::Sensible->get_renderer('HTML');
-  [ $reflector, $form, $renderer ]
+  [ $reflector, $form, $renderer, $renderer->render($form)->complete ]
 };
 
 my $create_a_bunch = sub {
  
   my @things;
+  my ( $reflector, $form, $renderer );
   for ( 0..100 ) {
    
-   my $reflector = Form::Sensible::Reflector::DBIC->new();
-   my $form      = $reflector->reflect_from( $schema->resultset("Test"),
+   $reflector = Form::Sensible::Reflector::DBIC->new();
+   $form      = $reflector->reflect_from( $schema->resultset("Test"),
     { form => { name => 'test' }, with_trigger => 1 } );
-   my $renderer = Form::Sensible->get_renderer('HTML');
-   push @things, [ $reflector, $form, $renderer ];
+   $renderer = Form::Sensible->get_renderer('HTML');
+   push @things, [ $reflector, $form, $renderer, $renderer->render($form)->complete ];
    
   }
 
   return \@things;
 };
 
+my $mangle_things = sub {
+
+   my ( $reflector, $form, $renderer );
+
+   $reflector = Form::Sensible::Reflector::DBIC->new();
+   $form      = $reflector->reflect_from( $schema->resultset("Test"),
+    { form => { name => 'test' }, with_trigger => 1 } );
+   $renderer = Form::Sensible->get_renderer('HTML');
+   my $rendered1 = $renderer->render($form)->complete;
+   $form->name('derp');
+   my $rendered2 = $renderer->render($form)->complete;
+   return [ $reflector, $form, $renderer, $rendered1, $rendered2 ];
+   
+};
+
 ok !leaks( $instantiation ), "no leaks found in insantiation";
 ok !leaks( $create_a_bunch ), "no leaks found in creating a bunch of objects";
+ok !leaks( $mangle_things ), "no leaks when screwing with form name";
 done_testing();
