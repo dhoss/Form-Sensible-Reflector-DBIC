@@ -20,12 +20,30 @@ my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
 
 ## start out basic
-my $test = sub {
+my $instantiation = sub {
   my $reflector = Form::Sensible::Reflector::DBIC->new();
   my $form      = $reflector->reflect_from( $schema->resultset("Test"),
   { form => { name => 'test' }, with_trigger => 1 } );
   my $renderer = Form::Sensible->get_renderer('HTML');
+  [ $reflector, $form, $renderer ]
 };
 
-ok !leaks( $test ), "no leaks found in insantiation";
+my $create_a_bunch = sub {
+ 
+  my @things;
+  for ( 0..100 ) {
+   
+   my $reflector = Form::Sensible::Reflector::DBIC->new();
+   my $form      = $reflector->reflect_from( $schema->resultset("Test"),
+    { form => { name => 'test' }, with_trigger => 1 } );
+   my $renderer = Form::Sensible->get_renderer('HTML');
+   push @things, [ $reflector, $form, $renderer ];
+   
+  }
+
+  return \@things;
+};
+
+ok !leaks( $instantiation ), "no leaks found in insantiation";
+ok !leaks( $create_a_bunch ), "no leaks found in creating a bunch of objects";
 done_testing();
