@@ -15,6 +15,7 @@ chomp $lib_dir;
 use Form::Sensible;
 use Form::Sensible::Reflector::DBIC;
 use Data::Dumper;
+use English qw( -no_match_vars );
 
 my $schema = TestSchema->connect('dbi:SQLite::memory:');
 $schema->deploy;
@@ -60,7 +61,36 @@ my $mangle_things = sub {
    
 };
 
-ok !leaks( $instantiation ), "no leaks found in insantiation";
-ok !leaks( $create_a_bunch ), "no leaks found in creating a bunch of objects";
-ok !leaks( $mangle_things ), "no leaks when screwing with form name";
+
+
+ok !( my $inst_leaks = leaks( $instantiation ) ), "no leaks found in insantiation";
+if ( $inst_leaks) {
+  display_leaks($inst_leaks, 'instantiation');
+}
+  
+ok !( my $create_leaks = leaks( $create_a_bunch ) ), "no leaks found in creating a bunch of objects";
+if ( $create_leaks ) {
+  display_leaks($create_leaks, 'create');
+}
+ok !( my $mangle_leaks = leaks( $mangle_things )), "no leaks when screwing with form name";
+if ( $mangle_leaks ) {
+  display_leaks($mangle_leaks, "mangle");
+}
+
+sub display_leaks {
+  my ($tester, $name) = @_;
+  print "RESULTS FROM $name\n";
+   my $unfreed_proberefs = $tester->unfreed_proberefs();
+    my $unfreed_count     = @{$unfreed_proberefs};
+    printf "Test 2: %d of %d original references were not freed\n",
+        $tester->unfreed_count(), $tester->probe_count()
+        or Carp::croak("Cannot print to STDOUT: $ERRNO");
+    print "These are the probe references to the unfreed objects:\n"
+        or Carp::croak("Cannot print to STDOUT: $ERRNO");
+    for my $ix ( 0 .. $#{$unfreed_proberefs} ) {
+        print Data::Dumper->Dump( [ $unfreed_proberefs->[$ix] ],
+            ["unfreed_$ix"] )
+            or Carp::croak("Cannot print to STDOUT: $ERRNO");
+    }
+  }
 done_testing();
